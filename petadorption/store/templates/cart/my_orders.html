@@ -1,0 +1,742 @@
+{% extends "base.html" %}
+{% load static %}
+{% load i18n %} {# Required for number formatting if needed #}
+
+{% block title %}My Orders{% endblock %}
+
+{% block head_extra %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+{% endblock %}
+
+
+{% block content %}
+<section id="home" class="hero" style="margin-top: 60px;">
+    <div class="container">
+        <h1>Premium Nutrition for Your Beloved Pets</h1>
+        <p>Explore our selection of nutritious and tasty food for dogs and cats.</p>
+        <a href="{% url 'product_list' %}" class="btn">Shop Now</a>
+    </div>
+</section>
+
+<section id="products" class="section">
+    <a href="{% url 'cart_detail' %}" class="btn-cart" style="position: absolute; right: 150px;">Cart</a>
+    <a href="{% url 'my_orders' %}" class="btn-cart" style="position: absolute; right: 260px;">Orders</a>
+
+    <div class="container">
+        <h2 class="section-title">My Orders</h2>
+
+        <div class="orders-grid">
+            {% for order in orders %}
+            <div class="order-container">
+                <div class="order-content">
+                    <div>
+                        <div class="order-header">Order #{{ order.order_number }}</div>
+                        <div class="order-details">
+                            <p><strong>Name:</strong> {{ order.name }}</p>
+                            <p><strong>Email:</strong> {{ order.email }}</p>
+                            <p><strong>Date:</strong> {{ order.created|date:"F d, Y - H:i" }}</p>
+                            <p class="total"><strong>Total:</strong> Rs.{{ order.total|floatformat:2 }}</p> {# Added floatformat for currency #}
+                        </div>
+                        <div class="order-items">
+                            <p><strong>Items:</strong></p>
+                            {% for item in order.items.all %}
+                            <div class="item">- {{ item.product.name }} (x{{ item.quantity }}) - Rs.{{ item.get_cost|floatformat:2 }}</div> {# Use item.get_cost #}
+                            {% endfor %}
+                        </div>
+                         <button class="btn btn-download-invoice"
+                                 style="margin-top: 15px; padding: 8px 15px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;" {# Added transition for hover #}
+                                 data-order-number="{{ order.order_number }}"
+                                 data-order-date="{{ order.created|date:"Y-m-d" }}"
+                                 data-customer-name="{{ order.name }}"
+                                 data-customer-email="{{ order.email }}"
+                                 data-total="{{ order.total|floatformat:2 }}"
+                                 {# Removed image_url, kept description #}
+                                 data-items='[{% for item in order.items.all %}{"name": "{{ item.product.name|escapejs }}", "category": "{{ item.product.category.name|default_if_none:""|escapejs }}", "description": "{{ item.product.description|default_if_none:""|escapejs }}", "quantity": {{ item.quantity|default_if_none:0 }}, "price": {{ item.price|default_if_none:""|floatformat:2|default:"0.00" }}, "cost": {{ item.get_cost|default_if_none:""|floatformat:2|default:"0.00" }} }{% if not forloop.last %}, {% endif %}{% endfor %}]'>
+                             Download Invoice
+                         </button>
+                         </div>
+                    {% if order.status == "Completed" %}
+                        <img src="{% static 'images/complete.png' %}" alt="completed" class="tick-image">
+                    {% else %}
+                        <img src="{% static 'images/pending.png' %}" alt="pending" class="tick-image">
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+             <p>You have no orders yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+
+{% block style %}
+{{ block.super }} {# Include styles from base.html if any #}
+<style>
+/* Add these styles to your existing CSS or override them */
+.cart-notification {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 15px 25px;
+    border-radius: 4px;
+    color: white;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.cart-notification.success {
+    background-color: #4CAF50;
+}
+
+.cart-notification.error {
+    background-color: #F44336;
+}
+
+.cart-notification.fade-out {
+    animation: fadeOut 0.3s ease-out;
+    opacity: 0;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+}
+
+/* Style for loading state */
+.add-to-cart[disabled] {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: #f7f7f7;
+    margin: 0;
+}
+.container {
+    padding: 30px;
+}
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 20px;
+}
+.order-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    margin-bottom: 20px; /* Adjusted margin */
+}
+.order-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* Align items to the top */
+}
+.order-header {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+}
+.order-details {
+    margin-bottom: 15px; /* Increased spacing */
+    line-height: 1.6; /* Improved readability */
+}
+.order-details p {
+    margin-bottom: 5px;
+}
+.order-items {
+    margin-bottom: 15px; /* Added spacing */
+}
+.order-items p {
+    margin-bottom: 8px;
+}
+.item {
+    margin-bottom: 5px;
+    color: #555; /* Slightly lighter text for items */
+}
+.total {
+    font-weight: bold;
+    color: #008000;
+    font-size: 1.1em; /* Make total slightly larger */
+}
+.tick-image {
+    width: 80px; /* Adjusted size */
+    height: 80px;
+    margin-left: 20px; /* Adjusted margin */
+    align-self: center; /* Center tick image vertically */
+}
+
+/* Style for the download button */
+.btn-download-invoice {
+    /* Existing styles */
+    margin-top: 15px;
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease; /* Added transition */
+}
+
+/* --- Added Hover Effect --- */
+.btn-download-invoice:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+    transform: translateY(-1px); /* Slight lift effect */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+.btn-download-invoice:active {
+     transform: translateY(0px); /* Press down effect */
+     box-shadow: none;
+}
+/* --- End Hover Effect --- */
+/* =========================================== */
+/* Styles for screens <= 850px wide          */
+/* (Tablet / Smaller Desktop Adjustments)      */
+/* =========================================== */
+@media (max-width: 850px) {
+
+/* --- Hero Section (Copied from previous example) --- */
+section#home.hero {
+    margin-top: 40px !important; /* Reduce top margin */
+    text-align: center;
+}
+.hero h1 { font-size: 2.2rem; }
+.hero p { font-size: 1rem; margin-bottom: 1.5rem; }
+.hero .btn { font-size: 0.95rem; padding: 0.6rem 1.6rem; }
+
+/* --- Cart/Orders Buttons (Copied from previous example) --- */
+section#products {
+    position: relative;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    padding-right: 30px;
+}
+.btn-cart {
+    position: static !important; /* Override inline absolute positioning */
+    right: auto !important;
+    top: auto !important;
+}
+
+/* --- Orders Page Specific Adjustments --- */
+.container {
+    padding: 20px 15px; /* Adjust padding */
+}
+
+.section-title { /* Assuming h2.section-title */
+    font-size: 1.8rem; /* Adjust title size */
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.orders-grid {
+    /* Adjust grid minimum size slightly if desired, or keep 400px */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 15px; /* Adjust gap */
+}
+
+.order-container {
+    padding: 15px; /* Reduce padding */
+}
+
+.order-content {
+    gap: 15px; /* Add gap between text and tick */
+}
+
+.order-header {
+    font-size: 18px; /* Adjust font size */
+}
+
+.order-details p,
+.order-items p,
+.item {
+    font-size: 0.9rem; /* Adjust font sizes */
+}
+
+.total {
+    font-size: 1em; /* Adjust total size */
+}
+
+.tick-image {
+    width: 60px; /* Adjust size */
+    height: 60px;
+    margin-left: 10px; /* Adjust margin */
+}
+
+.btn-download-invoice {
+    padding: 7px 12px; /* Adjust padding */
+    font-size: 0.85rem; /* Adjust font size */
+}
+}
+
+
+/* =========================================== */
+/* Styles for screens <= 349px wide          */
+/* (Mobile Adjustments)                      */
+/* =========================================== */
+@media (max-width: 349px) {
+
+/* --- Hero Section (Copied from previous example) --- */
+ section#home.hero {
+    margin-top: 0px !important;
+    padding-left: 10px; padding-right: 10px; /* Adjust padding */
+}
+.hero h1 { font-size: 1.8rem; line-height: 1.3; }
+.hero p { font-size: 0.9rem; margin-bottom: 1.2rem; }
+.hero .btn { font-size: 0.9rem; padding: 0.5rem 1.4rem; width: 80%; max-width: 250px; }
+
+/* --- Cart/Orders Buttons (Copied from previous example) --- */
+section#products {
+    flex-direction: column;
+    align-items: center;
+    padding-right: 0;
+    gap: 10px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+.btn-cart {
+    display: block;
+    width: 90%; /* Make slightly wider */
+    max-width: 280px;
+    text-align: center;
+    margin: 0 auto 0.5rem auto;
+}
+
+/* --- Orders Page Specific Adjustments --- */
+ .container {
+    padding: 15px 10px; /* Further reduce padding */
+    /* height: 420px; */
+    margin: 0;
+}
+.container>h1{
+    margin: 30px 0 0 0!important;
+    font-size: 30px !important;
+}
+.container>a{
+    position: relative;
+    top: -30px;
+}
+
+.section-title {
+    font-size: 1.5rem; /* Further adjust title size */
+    margin-bottom: 1rem;
+}
+
+.orders-grid {
+    /* Will automatically be 1 column due to minmax(400px) */
+    grid-template-columns: 1fr; /* Explicitly set to 1 column */
+    gap: 12px; /* Adjust gap */
+}
+
+.order-container {
+    padding: 12px; /* Further reduce padding */
+}
+
+.order-content {
+    flex-direction: column; /* Stack content and tick */
+    align-items: center;    /* Center items */
+    text-align: center;     /* Center text */
+    gap: 10px;              /* Adjust vertical gap */
+}
+
+/* Ensure text container takes full width */
+.order-content > div:first-child {
+     width: 100%;
+}
+
+.order-header {
+    font-size: 16px;
+}
+
+.order-details p,
+.order-items p,
+.item {
+    font-size: 0.8rem; /* Further adjust font sizes */
+    line-height: 1.5;
+}
+
+.order-items {
+    margin-bottom: 10px; /* Adjust spacing */
+}
+
+.total {
+    font-size: 0.9em;
+}
+
+.tick-image {
+    width: 50px; /* Further adjust size */
+    height: 50px;
+    margin-left: 0; /* Remove left margin */
+    margin-top: 10px; /* Add top margin */
+    align-self: center; /* Ensure centering */
+}
+
+.btn-download-invoice {
+    display: block; /* Make button full width */
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    padding: 8px 10px; /* Adjust padding */
+    font-size: 0.8rem; /* Adjust font size */
+}
+}
+</style>
+
+<link rel="stylesheet" href="{% static 'css/style.css' %}"> {# Ensure this path is correct #}
+{% endblock %}
+
+
+{% block javascript %}
+{{ block.super }} {# Include scripts from base.html if any #}
+<script>
+// Wrap everything in a try...catch to see if the script block itself fails
+try {
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("DEBUG: DOM Loaded. Setting up invoice buttons.");
+
+        // Check library loading
+        let jsPdfLoaded = false;
+        if (typeof window.jspdf !== 'undefined' && typeof window.jspdf.jsPDF !== 'undefined') {
+            jsPdfLoaded = true;
+            console.log("DEBUG: jsPDF library seems loaded.");
+        } else {
+            console.error("DEBUG: jsPDF library not loaded.");
+        }
+
+        const { jsPDF } = window.jspdf; // Get the jsPDF constructor
+
+        const downloadButtons = document.querySelectorAll('.btn-download-invoice');
+        console.log(`DEBUG: Found ${downloadButtons.length} download buttons.`);
+
+        if (downloadButtons.length === 0) {
+             console.warn("DEBUG: No download buttons found on the page!");
+             return;
+        }
+
+        downloadButtons.forEach((button, index) => {
+            button.addEventListener('click', function(event) {
+                event.preventDefault();
+                console.log(`DEBUG: Button ${index + 1} clicked! Order: ${this.dataset.orderNumber}`);
+
+                if (!jsPdfLoaded) {
+                    alert("Error: PDF Library not loaded. Cannot generate invoice.");
+                    return;
+                }
+
+                console.log("DEBUG: === Starting Full Invoice Generation ===");
+                try {
+                    // --- Get Data from Button Attributes ---
+                    const orderNumber = this.dataset.orderNumber;
+                    const orderDate = this.dataset.orderDate;
+                    const customerName = this.dataset.customerName;
+                    const customerEmail = this.dataset.customerEmail;
+                    const total = parseFloat(this.dataset.total);
+                    const itemsJsonString = this.dataset.items;
+
+                    console.log("DEBUG: Raw items JSON string BEFORE PARSE:", itemsJsonString);
+
+                    if (!orderNumber || !orderDate || !customerName || !customerEmail || isNaN(total) || !itemsJsonString) {
+                        console.error("DEBUG: Missing or invalid data attributes on the button.");
+                        alert("Could not generate invoice: Missing order data.");
+                        return;
+                    }
+
+                    let items = [];
+                    try {
+                        items = JSON.parse(itemsJsonString);
+                        console.log("DEBUG: Parsed items data successfully:", items);
+                    } catch (e) {
+                        console.error("DEBUG: Error parsing items JSON data:", e);
+                        console.error("DEBUG: Problematic JSON string that failed:", itemsJsonString);
+                        alert("Could not generate invoice: Invalid item data format. Check console for details.");
+                        return;
+                    }
+
+                    // --- PDF Generation Logic ---
+                    const doc = new jsPDF({
+                        orientation: 'p', unit: 'mm', format: 'a4'
+                    });
+                    console.log("DEBUG: Full jsPDF object created");
+
+                    const autoTableLoaded = typeof doc.autoTable === 'function';
+                    if (autoTableLoaded) {
+                         console.log("DEBUG: jsPDF AutoTable plugin confirmed on doc instance.");
+                    } else {
+                         console.warn("DEBUG: jsPDF AutoTable plugin NOT FOUND on doc instance.");
+                    }
+
+                    // --- Configuration ---
+                    const shopName = "Park's Paws Petcare";
+                    const shopEmail = "parkspaws.petcare@gmail.com";
+                    const shopAddressL1 = "123 Pet Street";
+                    const shopAddressL2 = "Pawtown, PT 54321";
+                    const shopContact = shopEmail + " | 555-1234";
+                    const logoStaticPath = "{% static 'images/logo.jpg' %}";
+                    const footerMessage = "Thank you for choosing Park's Paws Petcare!\nWe appreciate your business and hope your furry friend enjoys their goodies!";
+                    const pageMargins = { top: 5, right: 15, bottom: 25, left: 15 };
+
+                    let currentY = pageMargins.top;
+                    const usableWidth = doc.internal.pageSize.getWidth() - pageMargins.left - pageMargins.right;
+                    const centerPos = doc.internal.pageSize.getWidth() / 2;
+                    const rightPos = doc.internal.pageSize.getWidth() - pageMargins.right;
+
+                    // --- Logo ---
+                    try {
+                        doc.addImage(logoStaticPath, 'PNG', pageMargins.left, currentY, 40, 45);
+                    } catch (imgError) {
+                        console.error("DEBUG: Failed to add logo image. Using text instead.", imgError);
+                        doc.setFontSize(12).setTextColor(150).text(shopName, pageMargins.left, currentY + 10);
+                    }
+                    currentY += 40;
+
+                    // --- Shop Info & Invoice Title ---
+                    doc.setFontSize(10).setTextColor(80).setFont(undefined, 'normal');
+                    doc.text(shopName, pageMargins.left, currentY);
+                    if (shopAddressL1) doc.text(shopAddressL1, pageMargins.left, currentY + 4);
+                    if (shopAddressL2) doc.text(shopAddressL2, pageMargins.left, currentY + 8);
+                    if (shopContact) doc.text(shopContact, pageMargins.left, currentY + 12);
+                    doc.setFontSize(20).setFont(undefined, 'bold').setTextColor(0);
+                    doc.text("INVOICE", rightPos, currentY + 5, { align: 'right' });
+                    currentY += 18;
+
+                    // --- Horizontal Line ---
+                    doc.setDrawColor(180, 180, 180).setLineWidth(0.3).line(pageMargins.left, currentY, rightPos, currentY);
+                    currentY += 10;
+
+                    // --- Billing & Order Details ---
+                    doc.setFontSize(11).setFont(undefined, 'bold').setTextColor(0);
+                    doc.text("Bill To:", pageMargins.left, currentY);
+                    doc.text("Order Details:", rightPos - 55, currentY);
+                    doc.setFontSize(10).setFont(undefined, 'normal');
+                    doc.text(customerName, pageMargins.left, currentY + 5);
+                    doc.text(customerEmail, pageMargins.left, currentY + 9);
+                    doc.text(`Order #: ${orderNumber}`, rightPos - 55, currentY + 5);
+                    doc.text(`Date: ${orderDate}`, rightPos - 55, currentY + 9);
+                    currentY += 18;
+
+                    // --- Items Table ---
+                    console.log("DEBUG: Preparing items table...");
+                    const tableColumns = ["Item Details", "Category", "Qty", "Unit Price", "Total"];
+                    const tableRows = [];
+
+                    // Prepare data for AutoTable
+                    items.forEach(item => {
+                        const itemName = item.name || 'N/A';
+                        const itemCategory = item.category || 'N/A';
+                        const itemDescription = item.description || '';
+                        const itemQuantity = typeof item.quantity === 'number' ? item.quantity : 0;
+                        const itemPrice = parseFloat(item.price) || 0;
+                        const itemCost = parseFloat(item.cost) || 0;
+
+                        // Store data needed for drawing in the first column's raw data
+                        const itemData = [
+                            { name: itemName, description: itemDescription }, // Object for first column hook
+                            itemCategory,
+                            itemQuantity,
+                            `Rs. ${itemPrice.toFixed(2)}`,
+                            `Rs. ${itemCost.toFixed(2)}`
+                        ];
+                        tableRows.push(itemData);
+                    });
+                    console.log("DEBUG: Table rows prepared:", tableRows);
+
+                    if (autoTableLoaded) {
+                        console.log("DEBUG: Using autoTable plugin...");
+                        doc.autoTable({
+                            startY: currentY,
+                            head: [tableColumns],
+                            body: tableRows,
+                            theme: 'grid',
+                            headStyles: {
+                                fillColor: [75, 75, 75], textColor: [255, 255, 255],
+                                fontStyle: 'bold', halign: 'center', fontSize: 9
+                            },
+                            columnStyles: {
+                                0: { cellWidth: 'auto', fontStyle: 'normal', fontSize: 9 }, // Item Details (drawn manually)
+                                1: { cellWidth: 35, halign: 'center', valign: 'middle', fontSize: 9 }, // Category
+                                2: { cellWidth: 15, halign: 'center', valign: 'middle', fontSize: 9 }, // Qty
+                                3: { cellWidth: 30, halign: 'right', valign: 'middle', fontSize: 9 }, // Price
+                                4: { cellWidth: 30, halign: 'right', valign: 'middle', fontSize: 9 }  // Total
+                            },
+                            alternateRowStyles: { fillColor: [245, 245, 245] },
+                            margin: { left: pageMargins.left, right: pageMargins.right },
+                            // *** Use didDrawCell hook for custom rendering ***
+                            didDrawCell: function (data) {
+                                // Check if it's the first column ('Item Details') and it's a body cell
+                                if (data.column.index === 0 && data.cell.section === 'body') {
+                                    const itemInfo = data.row.raw[0];
+                                    const name = itemInfo.name || 'N/A';
+                                    const description = String(itemInfo.description || '');
+
+                                    // --- Draw Manually ---
+                                    const cell = data.cell;
+                                    const cellPadding = 2;
+                                    const startX = cell.x + cellPadding;
+                                    // *** Start text slightly lower from the top padding ***
+                                    let textY = cell.y + cellPadding + 3; // Start Y for text (adjust baseline slightly)
+                                    const maxWidth = cell.width - (2 * cellPadding);
+
+                                    // Store original font settings
+                                    const originalFont = doc.getFont();
+                                    const originalFontSize = doc.getFontSize();
+                                    const originalFontStyle = doc.getFont().fontStyle;
+                                    const originalTextColor = doc.getTextColor();
+
+                                    try {
+                                        // Draw white rectangle to cover default content
+                                        doc.setFillColor(255, 255, 255);
+                                        doc.rect(cell.x, cell.y, cell.width, cell.height, 'F');
+
+                                        // 1. Draw Item Name (Bold)
+                                        doc.setFont(undefined, 'bold').setFontSize(9);
+                                        doc.setTextColor(0);
+                                        const nameLines = doc.splitTextToSize(name, maxWidth);
+                                        doc.text(nameLines, startX, textY);
+                                        // *** Use precise line height from jsPDF ***
+                                        const nameLineHeight = doc.getLineHeight() / doc.internal.scaleFactor; // Get height in mm
+                                        textY += (nameLines.length * nameLineHeight) + 1; // Add gap AFTER name
+
+                                        // 2. Draw Description (Normal, smaller font)
+                                        if (description && description !== 'No description') {
+                                            doc.setFont(undefined, 'normal').setFontSize(8);
+                                            doc.setTextColor(80);
+                                            const descriptionLines = doc.splitTextToSize(description, maxWidth);
+                                            doc.text(descriptionLines, startX, textY);
+                                        }
+                                    } catch (drawError) {
+                                         console.error("DEBUG: Error during manual cell drawing:", drawError);
+                                    } finally {
+                                        // Restore original font settings
+                                        doc.setFont(originalFont.fontName, originalFontStyle);
+                                        doc.setFontSize(originalFontSize);
+                                        doc.setTextColor(originalTextColor);
+                                    }
+                                }
+                            },
+                             // *** Use willDrawCell to calculate and set row height BEFORE drawing ***
+                             willDrawCell: function (data) {
+                                 // Check if it's the first column ('Item Details') and it's a body cell
+                                if (data.column.index === 0 && data.cell.section === 'body') {
+                                    const itemInfo = data.row.raw[0];
+                                    const name = itemInfo.name || 'N/A';
+                                    const description = String(itemInfo.description || '');
+
+                                    // --- Calculate Text Height ---
+                                    const cellPadding = 2;
+                                    const maxWidth = data.cell.width - (2 * cellPadding);
+                                    let requiredHeight = 0;
+                                    const nameLineHeight = 3.5; // Approx mm for 9pt bold
+                                    const descLineHeight = 3;   // Approx mm for 8pt normal
+
+                                    // Height for name
+                                    doc.setFont(undefined, 'bold').setFontSize(9);
+                                    const nameLines = doc.splitTextToSize(name, maxWidth);
+                                    requiredHeight += (nameLines.length * nameLineHeight);
+
+                                    // Height for description
+                                    if (description && description !== 'No description') {
+                                        requiredHeight += 1; // Gap
+                                        doc.setFont(undefined, 'normal').setFontSize(8);
+                                        const descriptionLines = doc.splitTextToSize(description, maxWidth);
+                                        requiredHeight += (descriptionLines.length * descLineHeight);
+                                    }
+                                    // *** Increased vertical padding/buffer ***
+                                    requiredHeight += (2 * cellPadding) + 3; // Add top/bottom padding + more buffer
+
+                                     // Set minimum row height
+                                     const minRowHeight = 10; // Adjust as needed
+                                     requiredHeight = Math.max(requiredHeight, minRowHeight);
+
+                                    // Adjust row height if needed
+                                    if (data.row.height < requiredHeight) {
+                                        console.log(`DEBUG: [willDrawCell] Adjusting row ${data.row.index} height from ${data.row.height} to ${requiredHeight}`);
+                                        data.row.height = requiredHeight;
+                                    }
+                                     // Restore default font size for subsequent calculations/drawing
+                                     doc.setFontSize(9);
+                                     doc.setFont(undefined, 'normal');
+                                }
+                            },
+                        });
+                        currentY = doc.autoTable.previous.finalY + 15;
+                    } else {
+                        // Fallback if autoTable fails - basic list
+                        console.warn("DEBUG: autoTable function not found. Printing basic list.");
+                        doc.text("Items:", pageMargins.left, currentY); currentY += 7;
+                        items.forEach(item => {
+                             const itemPrice = parseFloat(item.price) || 0; const itemCost = parseFloat(item.cost) || 0;
+                             doc.text(`- ${item.name || 'N/A'} (${item.category || 'N/A'}) (x${item.quantity || 0}) = Rs.${itemCost.toFixed(2)}`, pageMargins.left + 5, currentY); currentY += 7;
+                        });
+                        currentY += 5;
+                    }
+
+                    // --- Grand Total ---
+                    console.log("DEBUG: Adding Grand Total...");
+                    doc.setFontSize(12).setFont(undefined, 'bold');
+                    doc.text(`Grand Total: Rs. ${total.toFixed(2)}`, rightPos, currentY, { align: 'right' });
+                    currentY += 20;
+
+                     // --- Footer Message ---
+                    console.log("DEBUG: Adding Footer...");
+                    doc.setFontSize(10).setTextColor(80).setFont(undefined, 'normal');
+                    const splitFooter = doc.splitTextToSize(footerMessage, usableWidth);
+                    const footerY = doc.internal.pageSize.getHeight() - pageMargins.bottom + 5;
+                    doc.text(splitFooter, centerPos, footerY, { align: 'center' });
+
+                    // --- Save the PDF ---
+                    console.log("DEBUG: Attempting to save full PDF...");
+                    try {
+                        doc.save(`${orderNumber}.pdf`);
+                        console.log("DEBUG: Full PDF save command executed.");
+                    } catch(saveError) {
+                        console.error("DEBUG: Error occurred during full doc.save():", saveError);
+                        alert("An error occurred while trying to save the PDF.");
+                    }
+
+                } catch (error) {
+                    console.error("DEBUG: Error during FULL PDF generation process:", error);
+                    alert("An error occurred while generating the invoice PDF.");
+                } // End full PDF generation try...catch
+
+            }); // End button click listener
+             console.log(`DEBUG: Added click listener to button ${index + 1}`);
+        }); // End forEach button
+         console.log("DEBUG: Finished adding listeners.");
+
+    }); // End DOMContentLoaded listener
+} catch (outerError) {
+    console.error("DEBUG: A critical error occurred OUTSIDE the DOMContentLoaded listener!", outerError);
+    alert("A critical JavaScript error occurred on the page. Check the console.");
+}
+</script>
+{% endblock %}

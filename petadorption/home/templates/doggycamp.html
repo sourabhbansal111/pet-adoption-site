@@ -1,0 +1,455 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+
+{% block style %}
+<style>
+        .tabs {
+            display: flex;
+            justify-content: center;
+            background-color: white;
+            gap: 10px;
+            font-family: "Cabin", Sans-serif;
+            font-weight: 200;
+            margin-top: 80px;
+        }
+        
+        /* #f0e9f5 */
+        .tab {
+            color: #6c3f82;
+            padding: 20px 30px;
+            cursor: pointer;
+            background-color: #e0d5e5;
+            border-radius: 7px;
+            text-decoration: none;
+        }
+
+        .tab:hover {
+            background-color: #6c3f82;
+            color: white;
+        }
+
+        .tab.active {
+            color: white;
+            background-color: #6c3f82;
+        }
+
+        .boarding {
+            width: 100%;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .boarding>.heading {
+            width: 100%;
+            background-color: #fcf3cc;
+            color: #46403c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 7px;
+        }
+
+        .boarding>.heading>h1 {
+            width: 100%;
+            font-size: 22px;
+            margin: 14.7px 20px;
+            background-color: #fcf3cc;
+            color: #46403c;
+            /* height: 70px; */
+            font-family: "Cabin", Sans-serif!important;
+            font-weight: bold;
+        }
+
+        .boarding>.card {
+            margin-top: 30px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            align-items: center;
+            gap: 50px;
+            padding: 50px 0;
+            width: 80%;
+            font-family: "Cabin", Sans-serif;
+            border: 0;
+        }
+
+        .boarding>.card>div {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.33);
+            width: 30%;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .boarding>.card>div:hover {
+            transform: scale(1.05);
+        }
+
+        .boarding>.card>div>img {
+            width: 100%;
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+        }
+
+        .boarding>.card>div>h1 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100px;
+            background-color: #e0d5e5;
+            font-family: "Cabin", Sans-serif;
+            font-size: 24px;
+            text-align: center;
+            color: #6C3E82;
+            font-weight: 500;
+        }
+
+        .boarding>.card>div>h3 {
+            text-align: center;
+            font-family: "Cabin", Sans-serif;
+            font-size: 18px;
+            padding: 20px;
+            color: rgba(0, 0, 0, 0.603);
+            font-weight: 300;
+            margin: 0;
+        }
+
+        .boarding>.card>div>h2 {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: "Cabin", Sans-serif;
+            font-size: 18px;
+            font-weight: 300;
+            width: 100%;
+            height: 60px;
+            color: white;
+            background-color: #6c3f82;
+        }
+
+        .boarding>.card>div>a {
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            background-color: #f79534;
+            font-weight: bold;
+            border-radius: 10px;
+            width: 90%;
+            height: 70px;
+            margin-bottom: 20px;
+        }
+
+       /* =========================================== */
+/* Styles for screens <= 850px wide          */
+/* (Tablet / Smaller Desktop Adjustments)      */
+/* =========================================== */
+@media (max-width: 850px) {
+
+/* --- Tabs --- */
+.tabs {
+    flex-wrap: wrap; /* Allow tabs to wrap */
+    gap: 8px; /* Adjust gap */
+    padding: 0 10px; /* Add some horizontal padding */
+    margin-top: 60px !important; /* Adjust top margin */
+}
+
+.tab {
+    padding: 15px 20px; /* Adjust padding */
+    font-size: 0.9rem; /* Adjust font size */
+}
+
+/* --- Main Content --- */
+.boarding {
+    margin-top: 15px;
+}
+
+.boarding > .heading {
+   margin: 0 5%; /* Add side margin to heading bar */
+   width: 90%;  /* Make heading bar slightly narrower */
+}
+
+.boarding > .heading > h1 {
+    font-size: 18px; /* Adjust font size */
+    margin: 12px 15px; /* Adjust margin/padding */
+    text-align: center;
+}
+
+/* --- Cards Container --- */
+/* Applies to all divs with class="card" inside .boarding */
+.boarding > .card {
+    width: 90%; /* Adjust container width */
+    gap: 30px; /* Adjust gap */
+    padding: 30px 0;
+}
+
+/* --- Individual Card (2 Columns) --- */
+/* Applies to all direct div children of .card */
+.boarding > .card > div {
+    width: calc(50% - 15px); /* 2 columns, accounting for gap */
+    min-width: 280px; /* Optional minimum width */
+}
+
+/* --- Card Content --- */
+.boarding > .card > div > h1 { /* Card Title Bar */
+    font-size: 20px; /* Adjust font size */
+    height: 80px; /* Adjust height */
+    padding: 0 10px; /* Add padding for text */
+}
+
+.boarding > .card > div > h3 { /* Card Description */
+    font-size: 16px; /* Adjust font size */
+    padding: 15px; /* Adjust padding */
+    min-height: 100px; /* Add min-height to help align cards */
+}
+
+.boarding > .card > div > h2 { /* Card Price Bar */
+    font-size: 17px; /* Adjust font size */
+    height: 50px; /* Adjust height */
+}
+
+.boarding > .card > div > a { /* Card Button */
+    height: 60px; /* Adjust height */
+    font-size: 1rem; /* Adjust font size */
+    width: 85%; /* Adjust width */
+}
+}
+
+
+/* =========================================== */
+/* Styles for screens <= 349px wide          */
+/* (Mobile Adjustments)                      */
+/* =========================================== */
+@media (max-width: 349px) {
+
+/* --- Tabs --- */
+.tabs {
+    gap: 5px;
+    padding: 0 5px;
+    margin-top: 10px !important;
+}
+
+.tab {
+    padding: 10px 12px; /* Further reduce padding */
+    font-size: 0.8rem; /* Further reduce font size */
+    flex-grow: 1; /* Allow tabs to distribute space */
+    text-align: center;
+}
+
+/* --- Main Content --- */
+ .boarding {
+    margin-top: 10px;
+}
+
+.boarding > .heading {
+    margin: 0 2.5%; /* Adjust side margin */
+    width: 95%;   /* Adjust width */
+ }
+
+.boarding > .heading > h1 {
+    font-size: 15px; /* Further adjust font size */
+    margin: 10px;
+    line-height: 1.4;
+}
+
+/* --- Cards Container --- */
+.boarding > .card {
+    width: 95%; /* Adjust container width */
+    gap: 20px; /* Adjust gap */
+    padding: 20px 0;
+}
+
+/* --- Individual Card (1 Column) --- */
+.boarding > .card > div {
+    width: 90%; /* 1 column, with some side margin */
+    max-width: 300px; /* Max width for very narrow screens */
+    min-width: unset; /* Remove min-width */
+}
+
+/* --- Card Content --- */
+ .boarding > .card > div > h1 { /* Card Title Bar */
+    font-size: 18px; /* Adjust font size */
+    height: auto; /* Auto height */
+    min-height: 70px; /* Min height */
+    padding: 10px;
+}
+
+.boarding > .card > div > h3 { /* Card Description */
+    font-size: 14px; /* Adjust font size */
+    padding: 12px; /* Adjust padding */
+    line-height: 1.5;
+    min-height: unset; /* Remove min-height */
+}
+
+.boarding > .card > div > h2 { /* Card Price Bar */
+    font-size: 16px; /* Adjust font size */
+    height: 45px; /* Adjust height */
+}
+
+.boarding > .card > div > a { /* Card Button */
+    height: 55px; /* Adjust height */
+    font-size: 0.9rem; /* Adjust font size */
+    width: 90%; /* Adjust width */
+}
+}
+    </style>
+
+
+    
+{% endblock %}
+
+{% block content %}
+    <div class="tabs">
+        <a href="{% url 'boarding' %}" class="tab">BOARDING</a>
+        <a href="{% url 'doggycamp' %}" class="tab active" data-tab="daycamp">DOGGY DAY CAMP</a>
+        <a href="{% url 'puppyplay' %}" class="tab">PUPPY PLAY GROUP</a>
+        <a href="{% url 'grooming' %}" class="tab">GROOMING</a>
+    </div>
+    <div class="boarding">
+        <!-- div 1 -->
+        <div class="heading">
+            <h1>CANINE CREW MONTHLY MEMBERSHIP</h1>
+        </div>
+        <!-- div 2 -->
+        <div class="card">
+            <!-- card 1 -->
+            <div>
+                <img src="{% static 'images/platinum.jpg' %}" alt="">
+                <h1>UNLIMITED (PLATINUM)</h1>
+                <h3>Unlimited doggy daycare for your dog every month. PLUS a monthly bath and 2 nights of boarding each
+                    month. It’s our lowest daily rate at only $18/day. Boarding subject to blackout on major holidays.
+                </h3>
+                <h2>$480/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+            <!-- card 2 -->
+            <div>
+                <img src="{% static 'images/gold.jpg' %}" alt="">
+                <h1>12 DAYS (GOLD)</h1>
+                <h3>Set your pup up with 12 days of play each month. PLUS a monthly bath and 1 night of boarding each
+                    month. This membership tier is a low daily rate of $26/day. Boarding subject to blackout on major
+                    holidays.</h3>
+                <h2>$315/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+            <!-- card 3 -->
+            <div>
+                <img src="{% static 'images/silver.jpg' %}" alt="">
+                <h1>8 DAYS (SILVER)</h1>
+                <h3>Give your pup the gift of socialization in our day camp 8 times each month PLUS a monthly bath. This
+                    translates to a $29 daily rate!</h3>
+                <h2>$235/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+            <!-- card 4 -->
+            <div>
+                <img src="{% static 'images/bronze.jpg' %}" alt="">
+                <h1>4 DAYS (BRONZE)</h1>
+                <h3>Our flexibility gives your pup the ability to visit us 4 times each month PLUS receive a nail trim
+                    or grind every month! This translates to a $34 daily rate!</h3>
+                <h2>$135/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+        </div>
+        <!-- div 3 -->
+        <div class="heading">
+            <h1>ELITE PACKAGES</h1>
+        </div>
+        <!-- div 4 -->
+        <div class="card">
+            <!-- card 1 -->
+            <div>
+                <img src="{% static 'images/elite_1.jpg' %}" alt="">
+                <h1>BEST IN SHOW</h1>
+                <h3>Unlimited daycare <br> <br> 7 days of boarding including one add-on (suite treat, ice cream or
+                    bedtime story) <br> <br> Free go-home fresh bath with every stay <br> <br> One free upgrade <br>
+                    <br> No blackout dates <br> <br> (these are benefits given each month)
+                </h3>
+                <h2>$950/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+            <!-- card 2 -->
+            <div>
+                <img src="{% static 'images/elite_2.jpg' %}" alt="">
+                <h1>BEST IN GROUP</h1>
+                <h3>Unlimited daycare <br> <br> 5 days of boarding including one add-on (suite treat, ice cream or
+                    bedtime story) <br> <br> 1 bath <br> <br> Boarding subject to blackout on major holidays. Upgrades
+                    options include Scented shampoo, facial or scented spray or boarding suite treat, ice cream or
+                    bedtime story. <br> <br> (these are benefits given each month)</h3>
+                <h2>$750/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+            <!-- card 3 -->
+            <div>
+                <img src="{% static 'images/elite_3.jpg' %}" alt="">
+                <h1>BEST IN BREED</h1>
+                <h3>Unlimited daycare <br> <br> 3 days of boarding including one add-on (suite treat, ice cream or
+                    bedtime story) <br> <br> 1 bath <br> <br> Boarding subject to blackout on major holidays. Upgrades
+                    options include Scented shampoo, facial or scented spray or boarding suite treat, ice cream or
+                    bedtime story. <br> <br> (these are benefits given each month)</h3>
+                <h2>$675/ month</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+        </div>
+        <!-- div 5 -->
+        <div class="heading">
+            <h1>NEW CUSTOMER SPECIAL</h1>
+        </div>
+        <!-- div 6 -->
+        <div class="card">
+            <div>
+                <img src="{% static 'images/new_coustomer.jpg' %}" alt="">
+                <h1>1ST DAY FREE</h1>
+                <h3>Seize the opportunity to try out our day camp with our First Day FREE offer for new customers. We’ll
+                    introduce your pup to his new best friends.</h3>
+                <h2>FREE day</h2>
+                <a href="">BOOK NOW</a>
+            </div>
+        </div>
+    </div>
+
+    
+
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert" style="
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 9999;
+          min-width: 250px;
+          max-width: 350px;
+          background-color: #6b32e4;
+          color: #fff;
+          border: none;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+          font-weight: 500;
+          font-size: 14px;
+          padding: 12px 16px;
+          border-radius: 8px;
+          transition: opacity 0.5s ease;
+          animation: fadeOut 0.5s ease 7s forwards;
+        ">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            filter: invert(1);
+          "></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endblock %}

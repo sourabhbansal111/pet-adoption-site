@@ -1,0 +1,2379 @@
+{% extends 'base.html' %} {% block style %}
+<style>
+  /* Base Styles */
+  /* body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+  } */
+
+  .profile-container {
+    display: flex;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 1400px;
+    max-width: 90%;
+    position: relative;
+    flex-direction: column;
+    align-items: center;
+    justify-self: center;
+    height: 550px;
+    margin: 70px 0 20px 0;
+  }
+
+  .profile-picture-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+    margin-left: 10%;
+  }
+
+  .profile-picture {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    background-color: #ddd;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    color: #888;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .profile-details {
+    text-align: center;
+    margin-left: 8%;
+  }
+
+  .profile-details h2 {
+    margin: 0 0 5px;
+    font-size: 24px;
+    color: #333;
+  }
+
+  .profile-details p {
+    margin: 0;
+    color: #777;
+  }
+
+  .logout-button {
+    background: #ff4b4b;
+    color: white;
+    border: none;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+
+  .logout-button:hover {
+    background: #ff3333;
+  }
+
+  /* Edit Profile Modal */
+  .edit-profile-modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    width: 90%;
+    max-width: 700px;
+  }
+
+  .edit-profile-modal h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    color: #333;
+  }
+
+  .edit-profile-modal input {
+    width: 100%;
+    padding: 10px;
+    margin: 0px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+
+  .edit-profile-modal button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 10px;
+  }
+
+  .edit-profile-modal button:hover {
+    background: #0056b3;
+  }
+
+  .overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+  }
+
+  /* Show Modal and Overlay when Targeted */
+  #edit-profile-modal:target {
+    display: block;
+  }
+
+  #edit-profile-modal:target ~ .overlay {
+    display: block;
+  }
+  #change-pass-modal:target {
+    display: block;
+  }
+
+  #change-pass-modal:target ~ .overlay {
+    display: block;
+  }
+
+  /* Close Button */
+  .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 40px;
+    color: #333;
+    text-decoration: none;
+  }
+
+  .close-button:hover {
+    color: #ff4b4b;
+  }
+
+  /* Fullscreen Image */
+  .full-img {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    z-index: 100;
+  }
+
+  .full-img img {
+    height: 700px;
+    width: 700px;
+    max-width: 80%;
+    max-height: 80%;
+  }
+
+  /* When clicked (target) */
+  #expand:target {
+    visibility: visible;
+    opacity: 1;
+  }
+  .full-img a {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block; /* Make entire area clickable */
+  }
+
+  /* Close Button */
+  .close-btn {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 50px;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  /* */
+  /* Button Group Container */
+  .button-group {
+    margin-bottom: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  /* Buttons & Dropdown */
+  .button-group button,
+  .dropdown-container {
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .button-group button:hover,
+  .dropdown-container:hover {
+    background: linear-gradient(135deg, #0056b3, #00449e);
+    transform: translateY(-2px);
+    box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.25);
+  }
+
+  /* Dropdown Styling */
+  .dropdown-container {
+    position: relative;
+    padding: 12px 20px;
+    cursor: pointer;
+  }
+
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    background: white;
+    min-width: 180px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    top: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: left;
+    animation: fadeIn 0.2s ease-in-out;
+  }
+  .table {
+    border-collapse: separate;
+    border-spacing: 15px;
+  }
+
+  /* Dropdown Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  /* Dropdown Menu Buttons */
+  .dropdown-menu button {
+    background: white;
+    color: #333;
+    padding: 12px 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .dropdown-menu button:hover {
+    background: #007bff;
+    color: white;
+  }
+
+  /* Content Sections */
+  .content-box {
+    display: none;
+    width: 100%;
+    padding: 25px;
+    border-radius: 10px;
+    background: white;
+    max-width: 90%;
+    margin: 20px 60px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+  }
+
+  /* Active Section */
+  .active {
+    display: block;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .button-group {
+      flex-direction: column;
+    }
+
+    .dropdown-container {
+      width: 100%;
+    }
+  }
+  .letter-button-group {
+    margin-bottom: 20px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  /* Buttons & Dropdown */
+  .letter-button-group button,
+  .letter-dropdown-container {
+    padding: 12px 20px;
+    cursor: pointer;
+    border: none;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .letter-button-group button:hover,
+  .letter-dropdown-container:hover {
+    background: linear-gradient(135deg, #0056b3, #00449e);
+    transform: translateY(-2px);
+    box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.25);
+  }
+
+
+  /* Dropdown Animation */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(-5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  /* Dropdown Menu Buttons */
+  .letter-dropdown-menu button {
+    background: white;
+    color: #333;
+    padding: 12px 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+
+  .letter-dropdown-menu button:hover {
+    background: #007bff;
+    color: white;
+  }
+
+  /* Content Sections */
+  .letter-content-box {
+    display: none;
+    padding: 25px;
+    border-radius: 10px;
+    width: 100%;
+    background: white;
+    max-width: 90%;
+    margin: 20px 60px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+  }
+
+  /* Active Section */
+  .letter-content-box.active {
+    display: block;
+  }
+  .status-icon i {
+    font-size: 20px; /* Adjust as needed */
+  }
+
+  /* Responsive Design */
+  @media (max-width: 600px) {
+    .letter-button-group {
+      flex-direction: column;
+    }
+
+    .letter-dropdown-container {
+      width: 100%;
+    }
+  }
+  .order-button-group {
+  margin-bottom: 20px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Buttons & Dropdown */
+.order-button-group button,
+.order-dropdown-container {
+  padding: 12px 20px;
+  cursor: pointer;
+  border: none;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.order-button-group button:hover,
+.order-dropdown-container:hover {
+  background: linear-gradient(135deg, #0056b3, #00449e);
+  transform: translateY(-2px);
+  box-shadow: 3px 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Dropdown Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+/* Dropdown Menu Buttons */
+.order-dropdown-menu button {
+  background: white;
+  color: #333;
+  padding: 12px 18px;
+  width: 100%;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.order-dropdown-menu button:hover {
+  background: #007bff;
+  color: white;
+}
+
+/* Content Sections */
+.order-content-box {
+  display: none;
+  padding: 25px;
+  border-radius: 10px;
+  width: 100%;
+  background: white;
+  max-width: 90%;
+  margin: 20px 60px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease-in-out;
+  text-align: center;
+}
+
+/* Active Section */
+.order-content-box.active {
+  display: block;
+}
+
+.order-status-icon i {
+  font-size: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+  .order-button-group {
+    flex-direction: column;
+  }
+
+  .order-dropdown-container {
+    width: 100%;
+  }
+}
+
+
+  /* Media Queries for Responsiveness */
+  @media (min-width: 600px) {
+    .profile-container {
+      flex-direction: row;
+      align-items: flex-start;
+    }
+
+    .profile-picture-section {
+      margin-bottom: 0;
+      margin-right: 20px;
+    }
+
+    .profile-details {
+      text-align: left;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .profile-details h2 {
+      font-size: 20px;
+    }
+
+    .profile-details p {
+      font-size: 14px;
+    }
+
+    .logout-button {
+      font-size: 14px;
+      padding: 8px 16px;
+    }
+  }
+
+  #edit-profile-modal a {
+    color: #000 ;
+  }
+  .empty-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid yellow;
+    background-color: yellow;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Checked Box with Green Tick */
+.checked-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid green;
+    background-color: green;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+}
+
+  /* --- Styles moved from inline --- */
+  .profile-details {
+    /* font-size: xx-large; From div.profile-details */ /* Note: This might conflict with existing .profile-details rules */
+    text-align: center; /* From div.profile-details */
+    padding-top: 20px; /* From div.profile-details */
+  }
+
+  #profile-name {
+    margin: 10px 0; /* From h1#profile-name */
+    font-size: 36px; /* From h1#profile-name */
+  }
+
+  #profile-info {
+    max-width: 700px; /* From div#profile-info */
+    border-radius: 15px; /* From div#profile-info */
+    font-family: 'Segoe UI', sans-serif; /* From div#profile-info */
+    color: #333; /* From div#profile-info */
+    margin: auto; /* From div#profile-info */
+    font-size: 16px; /* From div#profile-info */
+    padding: 30px 40px; /* From div#profile-info */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08); /* From div#profile-info */
+    background: #fff; /* From div#profile-info */
+  }
+
+  #gen-style-1 { /* From div inside #profile-info */
+    display: grid;
+    grid-template-columns: 150px auto;
+    row-gap: 20px;
+    column-gap: 30px;
+    align-items: center;
+    text-align: left;
+  }
+
+  #gen-style-2 { /* From Name label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-3 { /* From Name value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-4 { /* From Email label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-5 { /* From Email value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-6 { /* From span inside #gen-style-5 */
+    font-size: 24px;
+    color: #4CAF50;
+    vertical-align: middle;
+  }
+
+  #gen-style-7 { /* From Phone label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-8 { /* From Phone value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-9 { /* From Gender label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-10 { /* From Gender value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-11 { /* From DOB label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-12 { /* From DOB value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-13 { /* From Address label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-14 { /* From Address value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-15 { /* From Joined label div inside #gen-style-1 */
+    font-size: 14px;
+    color: #777;
+  }
+
+  #gen-style-16 { /* From Joined value div inside #gen-style-1 */
+    font-weight: 500;
+  }
+
+  #gen-style-17 { /* From Logout button inside profile-details */
+    padding: 10px 25px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+
+  #gen-style-18 { /* From Edit Profile button */
+    position: absolute;
+    top: 20%;
+    right: 3%;
+    width: 220px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #956fa7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 2px solid transparent;
+  }
+   /* Note: Hover effect for gen-style-18 handled by onmouseover/out */
+
+  #gen-style-19 { /* From Verify Email form */
+    position: absolute;
+    top: 35%;
+    right: 3%;
+    text-align: center;
+  }
+   /* Apply same style to both potential form tags */
+  #gen-style-19_alt { /* From Verify Email form (alternative if verified) */
+    position: absolute;
+    top: 35%;
+    right: 3%;
+    text-align: center;
+  }
+
+
+  #gen-style-20 { /* From Verify Email button */
+    width: 220px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #956fa7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 2px solid transparent;
+  }
+   /* Note: Hover effect for gen-style-20 handled by onmouseover/out */
+
+  #gen-style-21 { /* From Change Password button */
+    position: absolute;
+    top: 50%;
+    right: 3%;
+    width: 220px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #956fa7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 2px solid transparent;
+  }
+   /* Note: Hover effect for gen-style-21 handled by onmouseover/out */
+
+  #gen-style-22 { /* From Staff Page form */
+    position: absolute;
+    top: 65%;
+    right: 3%;
+    text-align: center;
+  }
+
+  #gen-style-23 { /* From Staff Page button */
+    width: 220px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #956fa7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 2px solid transparent;
+  }
+   /* Note: Hover effect for gen-style-23 handled by onmouseover/out */
+
+  #gen-style-24 { /* From Admin Page form */
+    position: absolute;
+    top: 80%;
+    right: 3%;
+    text-align: center;
+  }
+
+  #gen-style-25 { /* From Admin Page button */
+    width: 220px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #956fa7);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(110, 142, 251, 0.4);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+    border: 2px solid transparent;
+  }
+   /* Note: Hover effect for gen-style-25 handled by onmouseover/out */
+
+  #gen-style-26 { /* From div inside #change-pass-modal */
+    max-width: 400px;
+    margin: 40px auto;
+    background-color: #f9f9f9;
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  #gen-style-27 { /* From h2 inside #gen-style-26 */
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #333;
+  }
+
+  #gen-style-28 { /* From label inside #gen-style-26 */
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  #gen-style-29 { /* From input[name='old_password'] inside #gen-style-26 */
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  #gen-style-30 { /* From New Password label inside #gen-style-26 */
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  #new_password1 { /* From input#new_password1 inside #gen-style-26 */
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  #gen-style-31 { /* From Confirm Password label inside #gen-style-26 */
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  #gen-style-32 { /* From input[name='new_password2'] inside #gen-style-26 */
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 24px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+
+  #submitBtn { /* From button#submitBtn inside #gen-style-26 */
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  #gen-style-33 { /* From p inside #gen-style-26 */
+      margin-top: 10px;
+      text-align: right;
+  }
+
+  #gen-style-34 { /* From a inside #gen-style-33 */
+      text-decoration: none;
+      color: #0078d4;
+  }
+
+  #gen-style-35 { /* From div.profile-container (requests) */
+    height: auto;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #gen-style-36 { /* From button inside #viewedDropdownMenu (Accepted) */
+    background-color: rgba(44, 173, 44, 0.818);
+  }
+
+  #gen-style-37 { /* From button inside #viewedDropdownMenu (Declined) */
+    background-color: red;
+  }
+
+  #gen-style-38 { /* From table inside #allRequests */
+    border-collapse: separate;
+    border-spacing: 15px;
+  }
+
+  #gen-style-39 { /* From i inside .green-bulb (allRequests) */
+    color: green;
+    font-size: 24px;
+  }
+
+  #gen-style-40 { /* From i inside .red-bulb (allRequests) */
+    color: red;
+    font-size: 24px;
+  }
+
+  #gen-style-41 { /* From i inside .unknown-bulb (allRequests) */
+    color: rgb(106, 100, 100);
+    font-size: 24px;
+  }
+
+  #gen-style-42 { /* From Delete button inside #allRequests */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+  #gen-style-43 { /* From i inside .green-bulb (acceptedRequests) */
+    color: green;
+    font-size: 24px;
+  }
+
+  #gen-style-44 { /* From Delete button inside #acceptedRequests */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+  #gen-style-45 { /* From i inside .red-bulb (declinedRequests) */
+    color: red;
+    font-size: 24px;
+  }
+
+  #gen-style-46 { /* From Delete button inside #declinedRequests */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+  #gen-style-47 { /* From i inside .unknown-bulb (notViewedRequests) */
+    color: rgb(106, 100, 100);
+    font-size: 24px;
+  }
+
+  #gen-style-48 { /* From Delete button inside #notViewedRequests */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+  #gen-style-49 { /* From div.profile-container (letters) */
+    height: auto;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .letter-table { /* From table.letter-table inside #allLetters */
+    border-collapse: separate;
+    border-spacing: 15px;
+    width: 100%;
+  }
+
+  #gen-style-50 { /* From i inside .green-bulb (allLetters) */
+    color: green;
+    font-size: 24px;
+  }
+
+  #gen-style-51 { /* From i inside .red-bulb (allLetters) */
+    color: rgb(106, 100, 100);
+    font-size: 24px;
+  }
+
+  #gen-style-52 { /* From td message cell inside #allLetters */
+    width: 30%;
+  }
+
+  #gen-style-53 { /* From Delete button inside #allLetters */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+  #gen-style-54 { /* From table.letter-table inside #ViewedLetters */
+    border-collapse: separate;
+    border-spacing: 15px;
+    width: 100%;
+  }
+
+  #gen-style-55 { /* From i inside .green-bulb (ViewedLetters) */
+    color: green;
+    font-size: 24px;
+  }
+
+  #gen-style-56 { /* From td message cell inside #ViewedLetters */
+    width: 30%;
+  }
+
+  #gen-style-57 { /* From Delete button inside #ViewedLetters */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+  #gen-style-58 { /* From table.letter-table inside #notViewedLetters */
+    border-collapse: separate;
+    border-spacing: 15px;
+    width: 100%;
+  }
+
+  #gen-style-59 { /* From i inside .red-bulb (notViewedLetters) */
+    color: rgb(106, 100, 100);
+    font-size: 24px;
+  }
+
+  #gen-style-60 { /* From td message cell inside #notViewedLetters */
+    width: 30%;
+  }
+
+  #gen-style-61 { /* From Delete button inside #notViewedLetters */
+    border: none;
+    background: none;
+    color: red;
+    cursor: pointer;
+  }
+
+   #gen-style-62 { /* From div.profile-container (orders) */
+    height: auto;
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .full-img img {
+    border-radius: 20px;
+}
+
+   #gen-style-63, #gen-style-64, #gen-style-65 { /* From a inside table cells (orders) */
+     color: black;
+   }
+   #viewedDropdownMenu{color: #00000000; background: transparent; border: none;box-shadow: none;}
+   /* =========================================== */
+/* Styles for screens <= 850px wide          */
+/* (Tablet / Smaller Desktop Adjustments)      */
+/* =========================================== */
+@media (max-width: 850px) {
+
+.profile-container:first-of-type { /* Top profile container */
+    flex-direction: column;
+    align-items: center;
+    height: auto; /* Allow height to adjust */
+    width: auto;
+    max-width: 95%;
+    padding: 20px 15px;
+    margin: 60px auto 20px auto;
+}
+ /* Tab content containers */
+ .profile-container:nth-of-type(n+2) {
+     max-width: 95%;
+     margin: 20px auto;
+     padding: 15px;
+     height: auto;
+ }
+
+.profile-picture-section {
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 15px;
+}
+
+.profile-picture {
+    width: 180px;
+    height: 180px;
+}
+
+.profile-details {
+    margin-left: 0;
+    text-align: center;
+    width: 100%;
+    padding-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#profile-name, /* Target by ID if moved from inline */
+.profile-details h1 { /* Fallback if ID wasn't added */
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+#profile-info {
+    padding: 20px;
+    max-width: 500px;
+    font-size: 14px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+/* User Details Grid */
+#profile-info > div { /* Target grid container */
+    grid-template-columns: 100px auto; /* Label | Value */
+    column-gap: 15px;
+    row-gap: 12px;
+}
+ #profile-info > div > div { /* Grid cells */
+     overflow-wrap: break-word; /* Prevent overflow */
+     word-break: break-word;
+ }
+  /* Labels (target odd children or specific class if added) */
+ #profile-info > div > div:nth-of-type(odd) {
+    font-size: 13px;
+    text-align: right;
+    color: #777;
+ }
+  /* Values (target even children or specific class if added) */
+ #profile-info > div > div:nth-of-type(even) {
+    text-align: left;
+ }
+ /* Verified icon span */
+ #profile-info span[title="Verified"] {
+    font-size: 20px;
+ }
+
+
+/* --- Action Buttons Layout (Vertical Stack) --- */
+/* Target each button's container (a or form) individually */
+/* Make static, block, centered with specific width */
+.profile-container:first-of-type > a[href="#edit-profile-modal"],
+.profile-container:first-of-type > form[action*="verifyemail"],
+.profile-container:first-of-type > form[action*="success"],
+.profile-container:first-of-type > a[href="#change-pass-modal"],
+.profile-container:first-of-type > form[action*="staff"],
+.profile-container:first-of-type > form[action*="adminpage"]
+{
+    position: static;   /* Override absolute */
+    display: block;     /* Stack them */
+    width: 90%;         /* Control width */
+    max-width: 280px;   /* Limit width */
+    margin: 8px auto;     /* Center and add vertical spacing */
+    top: auto;
+    right: auto;
+    text-align: center; /* Center button inside if needed */
+}
+/* Style the buttons inside these containers */
+ .profile-container:first-of-type > a > button,
+ .profile-container:first-of-type > form > button
+ {
+     width: 100%; /* Make button fill container */
+     /* Keep base styles (padding, font-size etc.) from main CSS */
+ }
+ /* Specific dimensions/padding for Edit Profile & Change Password buttons */
+  .profile-container:first-of-type > a[href="#edit-profile-modal"] > button,
+  .profile-container:first-of-type > a[href="#change-pass-modal"] > button {
+       padding: 11px 20px; /* Adjusted padding */
+       font-size: 15px; /* Adjusted font size */
+  }
+
+
+.logout-button {
+    margin-top: 15px;
+    padding: 9px 18px;
+    font-size: 15px;
+}
+
+/* --- Tab Buttons (Side-by-side with Wrap) --- */
+.button-group, .letter-button-group, .order-button-group {
+   gap: 10px;
+   flex-wrap: wrap; /* Ensure wrapping */
+   flex-direction: row; /* Override potential column stacking */
+   justify-content: center; /* Center wrapped items */
+}
+ .button-group button, .dropdown-container,
+ .letter-button-group button, .letter-dropdown-container,
+ .order-button-group button, .order-dropdown-container {
+    padding: 10px 15px;
+    font-size: 14px;
+    width: auto; /* Allow buttons to size naturally */
+    flex-grow: 0; /* Don't force growth */
+ }
+ /* Dropdown Menu: Keep absolute positioning */
+ .dropdown-menu {
+     display: none; /* Controlled by JS */
+     position: absolute; /* Position relative to trigger */
+     top: 110%;
+     left: 50%;
+     transform: translateX(-50%);
+     min-width: fit-content; /* Auto width based on buttons */
+     box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+     z-index: 100;
+     border-radius: 8px;
+     overflow: hidden;
+     animation: fadeIn 0.2s ease-in-out;
+     /* Arrange internal buttons side-by-side */
+     display: flex;
+     justify-content: center;
+     gap: 5px;
+     padding: 5px;
+     background: white; /* Ensure background */
+     display: none; /* Keep hidden until JS trigger */
+ }
+  /* Class added by JS to show */
+ .dropdown-container.open .dropdown-menu {
+     display: flex;
+ }
+
+ /* Buttons inside dropdown */
+ .dropdown-menu button {
+     width: auto;
+     text-align: center;
+     flex-grow: 1; /* Allow buttons to share space */
+     padding: 10px 12px;
+     font-size: 13px;
+     border: 1px solid #eee;
+     border-radius: 4px;
+     background-color: white; /* Base background */
+     color: #333; /* Base color */
+ }
+  /* Specific background/color for viewed buttons */
+   #viewedDropdownMenu button[onclick*="acceptedRequests"] {
+       background-color: rgba(44, 173, 44, 0.1);
+       color: #1a7f37;
+       border-color: #a7d7b9;
+   }
+   #viewedDropdownMenu button[onclick*="declinedRequests"] {
+       background-color: rgba(244, 67, 54, 0.1);
+       color: #d93025;
+       border-color: #f7b2ae;
+   }
+
+
+/* --- Content Boxes and Tables --- */
+.content-box, .letter-content-box, .order-content-box {
+    max-width: 100%;
+    margin: 15px 0;
+    padding: 15px 10px;
+    overflow-x: auto; /* Add horizontal scroll for tables */
+    -webkit-overflow-scrolling: touch;
+}
+
+.table th, .table td,
+.letter-table th, .letter-table td {
+    font-size: 13px;
+    padding: 8px 8px;
+    white-space: nowrap; /* Keep table cells from wrapping */
+}
+ /* Allow specific columns to wrap if needed */
+ .table td:nth-child(7), /* Message */
+ .letter-table td:nth-child(5), /* Message */
+ .table td:nth-child(3) a p, /* Items */
+ .table th:nth-child(4), /* Pet/Service Name Header */
+ .table td:nth-child(4) /* Pet/Service Name Value */
+  {
+    white-space: normal; /* Allow wrapping */
+    min-width: 150px; /* Minimum width to encourage wrapping */
+ }
+ /* Icons in tables */
+ td i.fa-lightbulb {
+     font-size: 18px; /* Adjust icon size */
+  }
+
+
+/* --- Modals --- */
+.edit-profile-modal {
+    max-width: 90%;
+    padding: 20px;
+}
+
+ /* Modal content styles from previous response are likely okay */
+
+
+.full-img img {
+    max-width: 90%;
+    max-height: 75%;
+}
+ .full-img a.close-btn {
+    font-size: 35px;
+    top: 15px;
+    right: 20px;
+}
+}
+
+
+/* =========================================== */
+/* Styles for screens <= 349px wide          */
+/* =========================================== */
+@media (max-width: 400px) {
+
+.profile-container:first-of-type {
+    padding: 15px 5px;
+    margin: 45px auto 15px auto;
+}
+ /* Target tab containers */
+ .profile-container:nth-of-type(n+2) {
+     padding: 10px 5px;
+     margin: 15px auto;
+ }
+
+.profile-picture {
+    width: 100px;
+    height: 100px;
+}
+
+#profile-name, .profile-details h1 {
+    font-size: 22px;
+}
+
+#profile-info {
+    padding: 15px 8px;
+    font-size: 12px;
+    margin-bottom: 20px;
+}
+/* Single column profile info */
+#profile-info > div { /* Grid container */
+    grid-template-columns: 1fr; /* Single column */
+    text-align: center;
+    row-gap: 8px;
+}
+  #profile-info > div > div { /* Cells */
+    text-align: center !important;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  /* Labels */
+  #profile-info > div > div:nth-of-type(odd) {
+     font-size: 11px;
+     margin-bottom: -4px;
+  }
+   /* Values */
+   #profile-info > div > div:nth-of-type(even) {
+       font-size: 13px;
+   }
+   #profile-info span[title="Verified"] {
+       font-size: 16px;
+   }
+
+/* --- Action Buttons Layout (Vertical Stack) --- */
+.profile-container:first-of-type > a[href="#edit-profile-modal"],
+.profile-container:first-of-type > form[action*="verifyemail"],
+.profile-container:first-of-type > form[action*="success"],
+.profile-container:first-of-type > a[href="#change-pass-modal"],
+.profile-container:first-of-type > form[action*="staff"],
+.profile-container:first-of-type > form[action*="adminpage"]
+{
+     width: 95%;
+     max-width: 220px;
+     margin: 6px auto;
+     padding: 0; /* Reset padding on container */
+}
+  /* Buttons inside */
+  .profile-container:first-of-type > a > button,
+  .profile-container:first-of-type > form > button
+ {
+     padding: 9px 12px;
+     font-size: 13px;
+ }
+  /* Specific dimensions/padding */
+   .profile-container:first-of-type > a[href="#edit-profile-modal"] > button,
+   .profile-container:first-of-type > a[href="#change-pass-modal"] > button {
+        padding: 10px 15px; /* Example padding */
+        font-size: 13px;
+   }
+
+
+.logout-button {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+/* --- Tab Buttons (Side-by-side with Wrap) --- */
+.button-group, .letter-button-group, .order-button-group {
+   gap: 8px;
+   /* Stacking from 600px rule is removed by setting row wrap above */
+   flex-direction: row; /* Ensure row */
+   flex-wrap: wrap; /* Ensure wrapping */
+   justify-content: center;
+}
+ .button-group button, .dropdown-container,
+ .letter-button-group button, .letter-dropdown-container,
+ .order-button-group button, .order-dropdown-container {
+    padding: 9px 10px;
+    font-size: 13px;
+    width: auto; /* Reset potential full width from 600px rule */
+ }
+ /* Dropdown menu buttons still side-by-side but smaller & wrap */
+  
+ .dropdown-menu button {
+     padding: 8px 8px;
+     font-size: 12px;
+     flex-basis: calc(50% - 4px); /* Try for 2 per row */
+ }
+
+
+ /* --- Content Boxes and Tables --- */
+ .content-box, .letter-content-box, .order-content-box {
+    margin: 10px 0;
+    padding: 10px 5px;
+}
+.table th, .table td,
+.letter-table th, .letter-table td {
+    font-size: 11px;
+    padding: 5px 3px;
+}
+ /* Adjust specific columns if needed */
+ .table td:nth-child(7), .letter-table td:nth-child(5),
+ .table td:nth-child(3) a p,
+ .table th:nth-child(4), .table td:nth-child(4) {
+    min-width: 80px; /* Adjust min-width */
+ }
+
+.status-icon i, .order-status-icon i { font-size: 14px; }
+.empty-box, .checked-box { width: 14px; height: 14px; border-width: 1px;}
+td form button { font-size: 11px; padding: 1px 3px;}
+
+
+/* --- Modals --- */
+.edit-profile-modal {
+    /* padding: 10px; */
+    width: 95%;
+    max-width: 95%;
+}
+ .edit-profile-modal h3 { font-size: 16px; }
+ .edit-profile-modal input,
+ .edit-profile-modal select,
+ .edit-profile-modal textarea {
+    padding: 6px 8px;
+    font-size: 10px;
+    margin-bottom: 8px;
+
+ }
+ .edit-profile-modal button[type="submit"] {
+    padding: 8px 14px;
+    font-size: 14px;
+ }
+ .edit-profile-modal p,input{
+  margin: 0.1rem  !important;
+}
+.edit-profile-modal p> a{
+  font-size: 10px;
+}
+
+
+ #change-pass-modal-content { padding: 15px 10px; margin: 15px auto; }
+ #change-pass-modal-content h2 { font-size: 16px; }
+ #change-pass-modal-content label,
+ #change-pass-modal-content input,
+ #change-pass-modal-content button,
+ #change-pass-modal-content p a { font-size: 13px; }
+ #change-pass-modal-content button { padding: 8px 15px; }
+ #change-pass-modal .close-button { font-size: 28px; top: 5px; right: 8px;}
+ 
+.full-img img {
+    max-width: 90%;
+    max-height: 55%;
+}
+ .full-img a.close-btn { font-size: 30px; top: 10px; right: 15px; }
+ .five {position: static !important;}
+}
+  /* --- End of styles moved from inline --- */
+
+</style>
+
+{% endblock %} {% block content %}
+
+<div class="profile-container">
+  <div class="profile-picture-section">
+    {% if user.profile_picture %}
+    <a href="#expand" class="profile-picture">
+      <img
+        id="profile-image"
+        src="{{ user.profile_picture.url }}"
+        alt="Profile Picture"
+      />
+
+    </a>
+    {% else %}
+    <a href="#edit-profile-modal" class="profile-picture">
+      <span id="profile-icon">+</span>
+    </a>
+    {% endif %}
+  </div>
+
+  <div class="profile-details"> <h1 id="profile-name"> {{ user.username|title }}
+    </h1>
+
+    <div id="profile-info"> <div id="gen-style-1"> <div id="gen-style-2">Name:</div> <div id="gen-style-3">{{ user.first_name|title }} {{ user.last_name|title }}</div> <div id="gen-style-4">Email:</div> <div id="gen-style-5">{{ user.email }} {% if user.is_verified %}
+          <span title="Verified" id="gen-style-6">✔️</span> {% endif %}
+        </div>
+
+        <div id="gen-style-7">Phone:</div> <div id="gen-style-8">{{ user.phone_number }}</div> <div id="gen-style-9">Gender:</div> <div id="gen-style-10">{{ user.gender }}</div> <div id="gen-style-11">Date of Birth:</div> <div id="gen-style-12">{{ user.dob|date:"F d, Y" }}</div> <div id="gen-style-13">Address:</div> <div id="gen-style-14">{{ user.address }}</div> <div id="gen-style-15">Joined:</div> <div id="gen-style-16">{{ user.date_joined|date:"F d, Y" }}</div> </div>
+    </div>
+
+    <a href="{% url 'logout' %}">
+      <button class="logout-button" id="gen-style-17" onmouseover="this.style.backgroundColor='#d32f2f'" onmouseout="this.style.backgroundColor='#f44336'">
+        Logout
+      </button>
+    </a>
+  </div>
+ <a href="#edit-profile-modal">
+  <button
+    class="btn btn-primary five"
+    id="gen-style-18" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(110, 142, 251, 0.6)'"
+    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(110, 142, 251, 0.4)'">
+    🛠️ Edit Profile
+  </button>
+</a>
+
+
+{% if user.is_verified %}
+<form method="get" action="{% url 'success' user.email %}" class="five" id="gen-style-19_alt"> {% else %}
+
+<form method="get" action="{% url 'verifyemail' user.email %}" class="five" id="gen-style-19"> {% endif %}
+
+
+  <button
+  id="gen-style-20"  onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(110, 142, 251, 0.6)'"
+onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(110, 142, 251, 0.4)'"
+type="submit"
+>
+{% if user.is_verified %}
+
+✅ Email Verified
+
+{% else %}
+
+✉️ Verify Email
+{% endif %}
+
+</button>
+</form>
+
+
+<a href="#change-pass-modal">
+  <button
+  class="btn btn-primary five"
+    id="gen-style-21" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(110, 142, 251, 0.6)'"
+    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(110, 142, 251, 0.4)'">
+    🔑 Change Password
+  </button>
+</a>
+
+<form method="post" action="{% url 'staff' %}" class="five" id="gen-style-22"> {% csrf_token %}
+
+  {% if request.user.is_staff or request.user.is_superuser %}
+  <button
+  id="gen-style-23"  onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(110, 142, 251, 0.6)'"
+onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(110, 142, 251, 0.4)'"
+type="submit"
+>Staff Page</button>
+
+  {% endif %}
+</form>
+
+<form method="post" class="five" action="{% url 'adminpage' %}" id="gen-style-24"> {% csrf_token %}
+
+  {% if request.user.is_superuser %}
+  <button
+  id="gen-style-25"  onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 12px 25px rgba(110, 142, 251, 0.6)'"
+onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 8px 20px rgba(110, 142, 251, 0.4)'"
+type="submit"
+>Admin page</button>
+  {% endif %}
+</form>
+
+
+</div>
+</div>
+<div id="edit-profile-modal" class="edit-profile-modal">
+  <h3>Edit Profile</h3>
+  <form method="POST" enctype="multipart/form-data" action="{% url 'edit_profile' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit">Save Changes</button>
+  </form>
+  <a href="#" class="close-button">&times;</a>
+</div>
+
+<div id="change-pass-modal" class="edit-profile-modal">
+  <div id="gen-style-26"> <h2 id="gen-style-27">🔒 Change Password</h2> <form method="POST" action="{% url 'change_password' %}">
+    {% csrf_token %}
+
+    <label id="gen-style-28">Old Password</label><br> <input type="password" name="old_password" required id="gen-style-29"> <label id="gen-style-30">New Password</label><br> <input type="password" name="new_password1" id="new_password1" required> <div id="strengthMessage" class="strength-message"></div>
+
+    <label id="gen-style-31">Confirm Password</label><br> <input type="password" name="new_password2" required id="gen-style-32"> <button type="submit" id="submitBtn"> 🔐 Change Password
+    </button>
+  </form>
+  <a href="#" class="close-button">&times;</a>
+  <p id="gen-style-33"> <a href="{% url 'forgot_password' %}" id="gen-style-34"> 🔑 Forgot Password?
+    </a>
+  </p>
+
+
+</div>
+
+</div>
+<div class="overlay"></div>
+{% if user.profile_picture %}
+<div id="expand" class="full-img">
+  <a href="#" class="close-btn">&times;</a>
+  <a href="#"></a>
+  <img src="{{ user.profile_picture.url }}" alt="Expanded Photo" />
+</div>
+{% endif %}
+
+
+
+<div class="profile-container" id="gen-style-35"> 
+  <h1>Requests</h1>
+  <div class="button-group">
+
+    <button onclick="showContent('allRequests')">All</button>
+
+    <div class="dropdown-container" onclick="toggleDropdown()">
+      Viewed ▼
+      <div class="dropdown-menu" id="viewedDropdownMenu">
+        <button
+       
+          onclick="showContent('acceptedRequests')"
+          id="gen-style-36" >
+          Accepted
+        </button>
+        <button
+          onclick="showContent('declinedRequests')"
+          id="gen-style-37" >
+          Declined
+        </button>
+      </div>
+    </div>
+
+    <button onclick="showContent('notViewedRequests')">Not Viewed</button>
+  </div>
+
+  <div id="allRequests" class="content-box active">
+    <div class="accordion-body">
+      {% if contacts %}
+      <table
+        class="table"
+        id="gen-style-38" >
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Pet/servive Name</th>
+            <th>Pet/service id</th>
+            <th>Location</th>
+            <th>Message</th>
+            <th>Accepted /Declined By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for contact in contacts %}
+          <tr>
+            <td>
+              {% if contact.status == "accepted" %}
+              <span class="green-bulb">
+                <i
+                  class="fa-solid fa-lightbulb"
+                  id="gen-style-39" ></i>
+              </span>
+              {% elif contact.status == "declined" %}
+              <span class="red-bulb">
+                <i
+                  class="fa-solid fa-lightbulb"
+                  id="gen-style-40" ></i>
+              </span>
+              {% elif contact.status == "pending" %}
+              <span class="unknown-bulb">
+                <i
+                  class="fa-solid fa-lightbulb"
+                  id="gen-style-41" ></i>
+              </span>
+              {% endif %}
+            </td>
+            <td>{{ contact.id }}</td>
+            <td>{{contact.type}}</td>
+            <td>{{ contact.pname }}</td>
+            <td>{{ contact.pid }}</td>
+            <td>{{ contact.location }}</td>
+            <td>{{ contact.message }}</td>
+            <td>{{ contact.last_updated_by|default:"--" }}</td>
+            <td>
+              <form
+              action="{% url 'delete_contact' id=contact.id %}"
+              method="POST"
+              >
+              {% csrf_token %}
+                <input type="hidden" name="extra_data" value="another_value" />
+                <button
+                  type="submit"
+                  id="gen-style-42" >
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h1>No Requests</h1>
+      {% endif %}
+    </div>
+  </div>
+
+  <div id="acceptedRequests" class="content-box">
+
+    {% if contacts %} {% if co.0 %}
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Pet/servive Name</th>
+            <th>Pet/service id</th>
+            <th>Location</th>
+            <th>Message</th>
+            <th>Accepted /Declined By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in contacts %} {% if contact.status == "accepted" %}
+        <tr>
+          <td>
+            <span class="green-bulb">
+              <i
+                class="fa-solid fa-lightbulb"
+                id="gen-style-43" ></i>
+            </span>
+          </td>
+          <td>{{ contact.id }}</td>
+            <td>{{contact.type}}</td>
+            <td>{{ contact.pname }}</td>
+            <td>{{ contact.pid }}</td>
+            <td>{{ contact.location }}</td>
+            <td>{{ contact.message }}</td>
+            <td>{{ contact.last_updated_by|default:"--" }}</td>
+          <td>
+            <form
+              action="{% url 'delete_contact' id=contact.id %}"
+              method="POST"
+            >
+            {% csrf_token %}
+              <input type="hidden" name="extra_data" value="another_value" />
+              <button
+                type="submit"
+                id="gen-style-44" >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <h2>NO ACCEPTED REQUEST</h2>
+    {% endif %} {% else %}
+    <h2>NO Requests</h2>
+    {% endif %}
+  </div>
+
+  <div id="declinedRequests" class="content-box">
+   {% if contacts %} {% if co.1 %}
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Pet/servive Name</th>
+            <th>Pet/service id</th>
+            <th>Location</th>
+            <th>Message</th>
+            <th>Accepted /Declined By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in contacts %} {% if contact.status == "declined" %}
+        <tr>
+          <td>
+            <span class="red-bulb">
+              <i
+                class="fa-solid fa-lightbulb"
+                id="gen-style-45" ></i>
+            </span>
+          </td>
+          <td>{{ contact.id }}</td>
+          <td>{{contact.type}}</td>
+          <td>{{ contact.pname }}</td>
+          <td>{{ contact.pid }}</td>
+          <td>{{ contact.location }}</td>
+          <td>{{ contact.message }}</td>
+          <td>{{ contact.last_updated_by|default:"--" }}</td>
+          <td>
+            <form
+              action="{% url 'delete_contact' id=contact.id %}"
+              method="POST"
+            >
+            {% csrf_token %}
+              <input type="hidden" name="extra_data" value="another_value" />
+              <button
+                type="submit"
+                id="gen-style-46" >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <h2>NO DECLINED REQUEST</h2>
+    {% endif %} {% else %}
+    <h2>NO Requests</h2>
+    {% endif %}
+  </div>
+
+  <div id="notViewedRequests" class="content-box">
+    {% if contacts %} {% if co.2 %}
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+            <th>ID</th>
+            <th>Type</th>
+            <th>Pet/servive Name</th>
+            <th>Pet/service id</th>
+            <th>Location</th>
+            <th>Message</th>
+            <th>Accepted /Declined By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for contact in contacts %} {% if contact.status == "pending" %}
+        <tr>
+          <td>
+            <span class="unknown-bulb">
+              <i
+                class="fa-solid fa-lightbulb"
+                id="gen-style-47" ></i>
+            </span>
+          </td>
+          <td>{{ contact.id }}</td>
+          <td>{{contact.type}}</td>
+          <td>{{ contact.pname }}</td>
+          <td>{{ contact.pid }}</td>
+          <td>{{ contact.location }}</td>
+          <td>{{ contact.message }}</td>
+          <td>{{ contact.last_updated_by|default:"--" }}</td>
+          <td>
+            <form
+              action="{% url 'delete_contact' id=contact.id %}"
+              method="POST"
+            >
+            {% csrf_token %}
+              <input type="hidden" name="extra_data" value="another_value" />
+              <button
+                type="submit"
+                id="gen-style-48" >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <h2>NO PENDING REQUEST</h2>
+    {% endif %} {% else %}
+    <h2>NO Requests</h2>
+    {% endif %}
+
+
+  </div>
+</div>
+
+<div class="profile-container" id="gen-style-49"> <h1>Letters</h1>
+  <div class="letter-button-group">
+    <button onclick="showLetterContent('allLetters')">All</button>
+
+    <button
+      class="letter-dropdown-container"
+      onclick="showLetterContent('ViewedLetters')"
+    >
+      Viewed
+    </button>
+
+    <button onclick="showLetterContent('notViewedLetters')">Not Viewed</button>
+  </div>
+
+  <div id="allLetters" class="letter-content-box active">
+    <div class="letter-accordion-body">
+      {% if letters %}
+      <table
+        class="table"
+        >
+        <thead>
+          <tr>
+            <th></th>
+            <th>ID</th>
+            <th>Number</th>
+            <th>Location</th>
+            <th>Message</th>
+            <th>Viewed By</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for letter in letters %}
+          <tr>
+            <td>
+              {% if letter.status == 'Viewed' %}
+
+              <span class="green-bulb">
+                <i
+                  class="fa-solid fa-lightbulb"
+                  id="gen-style-50" ></i>
+              </span>
+
+              {% else %}
+              <span class="red-bulb">
+                <i
+                  class="fa-solid fa-lightbulb"
+                  id="gen-style-51" ></i>
+              </span>
+              {% endif %}
+            </td>
+            <td>{{ letter.id }}</td>
+            <td>{{ letter.number }}</td>
+            <td>{{ letter.location }}</td>
+            <td id="gen-style-52">{{ letter.message }}</td> <td>{{letter.last_updated_by|default:"--" }}</td>
+            <td>
+              <form
+                action="{% url 'delete_letter' id=letter.id %}"
+                method="POST"
+              >{% csrf_token %}
+                <input type="hidden" name="extra_data" value="another_value" />
+                <button
+                  type="submit"
+                  id="gen-style-53" >
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h1>No Letters</h1>
+      {% endif %}
+    </div>
+  </div>
+
+  <div id="ViewedLetters" class="letter-content-box">
+    {% if letters %} {% if co.3 %}
+    <table
+      class="table"
+      id="gen-style-54" >
+      <thead>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Number</th>
+          <th>Location</th>
+          <th>Message</th>
+          <th>Viewed By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for letter in letters %} {% if letter.status == 'Viewed' %}
+        <tr>
+          <td>
+            <span class="green-bulb">
+              <i
+                class="fa-solid fa-lightbulb"
+                id="gen-style-55" ></i>
+            </span>
+          </td>
+          <td>{{ letter.id }}</td>
+          <td>{{ letter.number }}</td>
+          <td>{{ letter.location }}</td>
+          <td id="gen-style-56">{{ letter.message }}</td> <td>{{letter.last_updated_by|default:"--" }}</td>
+          <td>
+            <form
+              action="{% url 'delete_letter' id=letter.id %}"
+              method="POST"
+            >{% csrf_token %}
+              <input type="hidden" name="extra_data" value="another_value" />
+              <button
+                type="submit"
+                id="gen-style-57" >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <h1>No viewed Letters</h1>
+    {% endif %} {% else %}
+    <h1>No Letters</h1>
+    {% endif %}
+  </div>
+
+  <div id="notViewedLetters" class="letter-content-box">
+   {% if letters %} {% if co.4 %}
+    <table
+      class="table"
+      id="gen-style-58" >
+      <thead>
+        <tr>
+          <th></th>
+          <th>ID</th>
+          <th>Number</th>
+          <th>Location</th>
+          <th>Message</th>
+          <th>Viewed By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for letter in letters %} {% if letter.status == 'Not Viewed' %}
+        <tr>
+          <td>
+            <span class="red-bulb">
+              <i
+                class="fa-solid fa-lightbulb"
+                id="gen-style-59" ></i>
+            </span>
+          </td>
+          <td>{{ letter.id }}</td>
+          <td>{{ letter.number }}</td>
+          <td>{{ letter.location }}</td>
+          <td id="gen-style-60">{{ letter.message }}</td> <td>{{letter.last_updated_by|default:"--" }}</td>
+          <td>
+            <form
+              action="{% url 'delete_letter' id=letter.id %}"
+              method="POST"
+            >{% csrf_token %}
+              <input type="hidden" name="extra_data" value="another_value" />
+              <button
+                type="submit"
+                id="gen-style-61" >
+                Delete
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endif %} {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <h1>No viewed Letters</h1>
+    {% endif %} {% else %}
+    <h1>No Letters</h1>
+    {% endif %}
+  </div>
+</div>
+
+<div class="profile-container" id="gen-style-62">
+  <h1>Orders</h1>
+   <div class="order-button-group">
+    <button onclick="showOrderContent('orderAll')">All</button>
+
+    <button
+      class="letter-dropdown-container"
+      onclick="showOrderContent('orderCompleted')"
+    >
+     Completed
+    </button>
+
+    <button onclick="showOrderContent('orderPending')">Pending</button>
+  </div>
+    <div id="orderAll" class="order-content-box active">
+      {% if orders.0 %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Order No</th>
+            <th><a href="{% url 'my_orders' %}" id="gen-style-63">Items</a></th> <th>Total</th>
+            <th>Created</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders.0 %}
+          <tr>
+
+              <td>
+                {% if order.status == "Pending" %}
+                <div class="empty-box"></div>
+                {% else %}
+                <div class="checked-box"></div>
+                {% endif %}
+
+            </td>
+            <td>{{ order.order_number }}</td>
+            <td><a href="{% url 'my_orders' %}" id="gen-style-64"> {% for item in order.items.all %}
+              <p>{{ item.quantity }} x {{ item.product.name }} </p>
+              {% endfor %}</a></td>
+            <td>${{ order.total }}</td>
+            <td>{{ order.created }}</td>
+            <td>{{ order.status }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h2>NO ORDERS</h2>
+      {% endif %}
+    </div>
+
+    <div id="orderCompleted" class="order-content-box">
+      {% if orders.0 %}
+      {% if orders.1 %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Order No</th>
+            <th><a href="{% url 'my_orders' %}" id="gen-style-65">Items</a></th> <th>Total</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders.1 %}
+          <tr>
+            <td><div class="checked-box"></div></td>
+            <td>{{ order.order_number }}</td>
+            <td><a href="{% url 'my_orders' %}" style="color: black;">
+              {% for item in order.items.all %}
+              <p>{{ item.quantity }} x {{ item.product.name }} </p>
+              {% endfor %}</a></td>
+            <td>${{ order.total }}</td>
+            <td>{{ order.created }}</td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h2>NO COMPLETED ORDERS</h2>
+      {% endif %}
+      {% else %}
+      <h2>NO ORDERS</h2>
+      {% endif %}
+    </div>
+
+    <div id="orderPending" class="order-content-box">
+      {% if orders.0 %}
+      {% if orders.2 %}
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Order No</th>
+            <th><a href="{% url 'my_orders' %}" style="color: black;">Items</a></th>
+            <th>Total</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders.2 %}
+          <tr>
+            <td><div class="empty-box"></div></td>
+            <td>{{ order.order_number }}</td>
+             <td><a href="{% url 'my_orders' %}" style="color: black;">
+              {% for item in order.items.all %}
+              <p>{{ item.quantity }} x {{ item.product.name }} </p>
+              {% endfor %}</a></td>
+            <td>${{ order.total }}</td>
+            <td>{{ order.created }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <h2>NO PENDING ORDERS</h2>
+      {% endif %}
+      {% else %}
+      <h2>NO ORDERS</h2>
+      {% endif %}
+    </div>
+
+</div>
+
+
+
+
+
+<script>
+
+  const passwordInput = document.getElementById("new_password1");
+    const message = document.getElementById("strengthMessage");
+    const submitBtn = document.getElementById("submitBtn");
+
+
+    passwordInput.addEventListener("input", function () {
+    const value = passwordInput.value;
+    const simplePassword = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+    const simplePassword2 = /^.{9,}$/;
+
+
+    if (value.length === 0) {
+      message.textContent = "";
+      submitBtn.disabled = true;
+    } else if (simplePassword.test(value) || simplePassword2.test(value)) {
+      message.textContent = "Looks good 👍";
+      message.className = "strength-message valid";
+      submitBtn.disabled = false;
+    } else {
+      message.textContent = "At least 6 characters with a letter & number or 9 characters ";
+      message.className = "strength-message invalid";
+      submitBtn.disabled = true;
+    }
+  });
+
+      function uploadProfilePicture(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const formData = new FormData();
+          formData.append("profile_picture", file);
+
+          fetch("/upload_profile_picture", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.text())
+            .then((filePath) => {
+              document.getElementById("profile-image").style.display = "block";
+              document.getElementById("profile-image").src = filePath; // Update image preview
+              document.getElementById("profile-imagetop").src = filePath; // Update image preview
+              document.getElementById("profile-icon").style.display = "none";
+            })
+            .catch((error) => console.error("Upload failed:", error));
+        }
+      }
+
+      // Function to show the selected content
+      function showContent(section) {
+        // Hide all content sections
+        document
+          .querySelectorAll(".content-box")
+          .forEach((div) => (div.style.display = "none"));
+
+        // Show the selected section
+        document.getElementById(section).style.display = "block";
+
+        // Close the dropdown menu after clicking an option
+        closeDropdown();
+      }
+
+      // Function to toggle the dropdown menu
+      function toggleDropdown() {
+        let dropdownMenu = document.getElementById("viewedDropdownMenu");
+
+        // Toggle between showing and hiding
+        if (dropdownMenu.style.display === "block") {
+          dropdownMenu.style.display = "none";
+        } else {
+          dropdownMenu.style.display = "block";
+        }
+      }
+
+      // Function to close the dropdown menu
+      function closeDropdown() {
+        document.getElementById("viewedDropdownMenu").style.display = "none";
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (event) {
+        let dropdownContainer = document.querySelector(".dropdown-container");
+        let dropdownMenu = document.getElementById("viewedDropdownMenu");
+
+        // Close dropdown only if clicking outside the dropdown-container
+        if (!dropdownContainer.contains(event.target)) {
+          closeDropdown();
+        }
+      });
+
+      // Prevent dropdown from closing when clicking inside it
+      document
+        .getElementById("viewedDropdownMenu")
+        .addEventListener("click", function (event) {
+          event.stopPropagation();
+        });
+
+      function showLetterContent(sectionId) {
+        let sections = document.querySelectorAll(".letter-content-box");
+        sections.forEach((section) => section.classList.remove("active"));
+
+        document.getElementById(sectionId).classList.add("active");
+      }
+
+      function showOrderContent(sectionId) {
+        let sections = document.querySelectorAll(".order-content-box");
+        sections.forEach((section) => section.classList.remove("active"));
+
+        document.getElementById(sectionId).classList.add("active");
+      }
+
+      function toggleLetterDropdown() {
+        let dropdown = document.getElementById("viewedLetterDropdownMenu");
+        dropdown.style.display =
+          dropdown.style.display === "block" ? "none" : "block";
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", function (event) {
+        let dropdown = document.getElementById("viewedLetterDropdownMenu");
+        let dropdownContainer = document.querySelector(
+          ".letter-dropdown-container"
+        );
+
+        if (!dropdownContainer.contains(event.target)) {
+          dropdown.style.display = "none";
+        }
+      });
+      </script>
+
+
+{% endblock %}

@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="thank-you-section" style="margin-top: 75px;">
+    <div class="thank-you-container">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+        </div>
+        
+        <h1>Thank You For Your Order!</h1>
+        <p class="confirmation-message">Your order has been placed successfully. A confirmation email has been sent to your email address.</p>
+        
+        <div class="order-details">
+            <div class="detail-card">
+                <h3>Order Information</h3>
+                <div class="detail-row">
+                    <span>Order Number:</span>
+                    <strong>#{{ order_number }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Total Amount:</span>
+                    <strong>Rs.{{ order_total }}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Estimated Delivery:</span>
+                    <strong>{{ estimated_delivery }}</strong>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <a href="{% url 'product_list' %}" class="continue-shopping">Continue Shopping</a>
+            <a href="{% url 'my_orders' %}" class="view-order">View Order Details</a>
+        </div>
+    </div>
+</section>
+
+<style>
+    .thank-you-section {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 2rem;
+        background-color: #fff9f2;
+    }
+    
+    .thank-you-container {
+        max-width: 600px;
+        width: 100%;
+        padding: 3rem 2rem;
+        background-color: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+    
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 1.5rem;
+        background-color: #e6f7ed;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .success-icon svg {
+        width: 40px;
+        height: 40px;
+        color: #2ecc71;
+    }
+    
+    h1 {
+        color: #e65100;
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+    
+    .confirmation-message {
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+    
+    .order-details {
+        margin: 2rem 0;
+    }
+    
+    .detail-card {
+        background-color: #fff3e0;
+        padding: 1.5rem;
+        border-radius: 8px;
+        text-align: left;
+    }
+    
+    .detail-card h3 {
+        margin-bottom: 1rem;
+        color: #e65100;
+    }
+    
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 0.8rem 0;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+    
+    .continue-shopping {
+        padding: 0.8rem 1.5rem;
+        background-color: #ff7b25;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    
+    .continue-shopping:hover {
+        background-color: #e65100;
+    }
+    
+    .view-order {
+        padding: 0.8rem 1.5rem;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    
+    .view-order:hover {
+        background-color: #111;
+    }
+    /* =========================================== */
+/* Styles for screens <= 850px wide          */
+/* (Tablet / Smaller Desktop Adjustments)      */
+/* =========================================== */
+@media (max-width: 850px) {
+    .thank-you-section {
+        padding: 1.5rem; /* Adjust overall section padding */
+        min-height: 70vh; /* Adjust min height if needed */
+        margin-top: 60px !important; /* Adjust top margin */
+    }
+
+    .thank-you-container {
+        padding: 2rem 1.5rem; /* Adjust container padding */
+        max-width: 90%;      /* Allow slightly wider on tablet */
+    }
+
+    .success-icon {
+        width: 70px; /* Adjust icon size */
+        height: 70px;
+        margin-bottom: 1rem;
+    }
+
+    .success-icon svg {
+        width: 35px; /* Adjust svg size */
+        height: 35px;
+    }
+
+    h1 {
+        font-size: 1.8rem; /* Adjust font size */
+    }
+
+    .confirmation-message {
+        font-size: 0.95rem; /* Adjust font size */
+        margin-bottom: 1.5rem;
+    }
+
+    .order-details {
+        margin: 1.5rem 0; /* Adjust margin */
+    }
+
+    .detail-card {
+        padding: 1.2rem; /* Adjust padding */
+    }
+
+    .detail-card h3 {
+        font-size: 1.1rem; /* Adjust font size */
+        margin-bottom: 0.8rem;
+    }
+
+    .detail-row {
+        margin: 0.6rem 0; /* Adjust margin */
+        font-size: 0.9rem; /* Adjust font size */
+    }
+
+    .action-buttons {
+        gap: 0.8rem; /* Adjust gap */
+        margin-top: 1.5rem;
+    }
+
+    .continue-shopping,
+    .view-order {
+        padding: 0.7rem 1.2rem; /* Adjust padding */
+        font-size: 0.9rem; /* Adjust font size */
+    }
+}
+
+
+/* =========================================== */
+/* Styles for screens <= 349px wide          */
+/* (Mobile Adjustments)                      */
+/* =========================================== */
+@media (max-width: 349px) {
+    .thank-you-section {
+        padding: 1rem; /* Further reduce padding */
+        min-height: 60vh;
+        margin-top: 0px !important; /* Further adjust top margin */
+    }
+
+    .thank-you-container {
+        padding: 1.5rem 1rem; /* Further reduce padding */
+        max-width: 95%;
+    }
+
+    .success-icon {
+        width: 60px; /* Further adjust icon size */
+        height: 60px;
+    }
+
+    .success-icon svg {
+        width: 30px; /* Further adjust svg size */
+        height: 30px;
+    }
+
+    h1 {
+        font-size: 1.5rem; /* Further adjust font size */
+    }
+
+    .confirmation-message {
+        font-size: 0.85rem; /* Further adjust font size */
+    }
+
+    .order-details {
+        margin: 1.2rem 0;
+    }
+
+    .detail-card {
+        padding: 1rem; /* Further adjust padding */
+    }
+
+     .detail-card h3 {
+        font-size: 1rem; /* Further adjust font size */
+    }
+
+    .detail-row {
+        /* Stack label and value vertically */
+        flex-direction: column;
+        align-items: flex-start; /* Align items to the start */
+        gap: 2px; /* Small gap between label and value */
+        margin: 0.7rem 0;
+        font-size: 0.85rem; /* Further adjust font size */
+        text-align: left; /* Ensure left alignment */
+    }
+     .detail-row span {
+         /* Style for the label */
+         color: #777; /* Example: slightly lighter color for label */
+     }
+      .detail-row strong {
+         /* Style for the value */
+         margin-top: 2px; /* Add slight space */
+      }
+
+    .action-buttons {
+        flex-direction: column; /* Stack buttons vertically */
+        align-items: stretch;   /* Make buttons take full width */
+        gap: 0.7rem;            /* Adjust vertical gap */
+        margin-top: 1.2rem;
+    }
+
+    .continue-shopping,
+    .view-order {
+        padding: 0.7rem 1rem; /* Adjust padding */
+        font-size: 0.85rem; /* Adjust font size */
+        /* Width is handled by align-items: stretch on parent */
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}

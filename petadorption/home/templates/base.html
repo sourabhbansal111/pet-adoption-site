@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="icon" href="/static/images/logo.jpg" />
+    <link
+      
+      rel="stylesheet"
+      href="	https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <title>Park's Paws | Petcare</title>
+    <style>
+      body {
+        width: 100%;
+        margin: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      a {
+        text-decoration: none;
+        color: white;
+      }
+
+      header {
+        position: relative;
+        width: 100%;
+        height: 220px;
+      }
+
+      header > video {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 1;
+      }
+
+      header > .overlay {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+      }
+
+      header > .content {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: white;
+        text-align: center;
+      }
+
+      header > .content > img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        margin-bottom: 20px;
+      }
+
+      header > .content > h1 {
+        font-size: 48px;
+        margin: 10px 0;
+      }
+
+      header > .content > a {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #835997;
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+        font-size: 25px;
+      }
+
+      header > .content > a:hover {
+        background-color: #674677;
+      }
+      header > .content > a:nth-of-type(2) {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #835997;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-size: 18px;
+        position: absolute;
+        top: 3%;
+        right: 3%;
+      }
+      header > .content > a:nth-of-type(2):hover {
+        background-color: #674677;
+      }
+      /* ---------------------------------------------- */
+
+      /* ------------------------------------------------- */
+
+      /* ///*/ /*/*/ /*/*/ /*/*****/ /*/////////////////////////////------------------------------------------------------------------- */
+      nav.navbar {
+        position: absolute;
+        width: 100%;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        background-color: #eb9a4b;
+        padding: 0;
+      }
+
+      /* General Reset */
+      .navbar a {
+        text-decoration: none;
+        color: white;
+        padding: 11px 20px;
+        margin: 0 5px;
+        font-size: 18px;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: transform 0.3s ease, font-size 0.3s ease,
+        background 0.3s ease;
+        position: relative;
+      }
+
+      /* Hover Effects for Main Navbar Items */
+      .navbar a:hover {
+        font-size: 22px;
+        transform: scale(1.1);
+        background: #835997; /* Change color on hover */
+      }
+
+      /* Navbar Shift on Hover */
+      .navbar a:hover ~ a {
+        transform: translateX(15px);
+      }
+
+      .navbar a:has(~ a:hover) {
+        transform: translateX(-15px);
+      }
+
+      /* Dropdown Styling */
+      .dropdown {
+        position: absolute;
+        transform: translateX(-50%);
+        background: #835997;
+        padding: 10px;
+        z-index: 1000;
+        display: none;
+        border-radius: 0 0 5px 5px;
+        width: 200px;
+        text-align: center;
+      }
+
+      .dropdown1 {
+        width: 250px;
+        top: 100%;
+        left: 45.5%;
+      }
+      .dropdown2 {
+        top: 100%;
+        left: 52.1%;
+      }
+      .dropdown3 {
+        top: 100%;
+        left: 77.9%;
+      }
+      .dropdown a {
+        display: block;
+        padding: 10px;
+        color: white;
+        font-size: 16px;
+        transition: none;
+        /* transition: background 0.3s ease; */
+      }
+
+      /* 🔥 Keep only color change on dropdown hover */
+      .dropdown a:hover {
+        font-size: 16px;
+        transform: none;
+        background: #674677; /* Only color changes on hover */
+      }
+
+      /* Show Dropdown on Hover */
+      .has-dropdown1:hover + .dropdown1,
+      .dropdown1:hover,
+      .has-dropdown2:hover + .dropdown2,
+      .dropdown2:hover,
+      .has-dropdown3:hover + .dropdown3,
+      .dropdown3:hover {
+        display: block;
+      }
+
+      .active-dropdown {
+        background: #835997 !important;
+        color: white !important;
+        transform: scale(1.28);
+        /* z-index: 10; */
+        background: #835997; /* Change color on hover */
+        /* transform: scale(1.2) translateY(5px); */
+      }
+
+      .active-dropdown ~ a {
+        transform: translateX(25px);
+      }
+
+      .navbar a:has(~ .active-dropdown) {
+        transform: translateX(-25px);
+      }
+
+      /* Keep Services & Resources slight downward effect */
+      .has-dropdown1:hover,
+      .has-dropdown2:hover,
+      .has-dropdown3:hover {
+        transform: scale(1.2) translateY(5px);
+      }
+
+      /* 🔥 Fix: Parent link stays highlighted when dropdown is hovered */
+      .has-dropdown1:hover,
+      .has-dropdown2:hover,
+      .has-dropdown3:hover,
+      .dropdown1:hover,
+      .dropdown2:hover,
+      .dropdown3:hover{
+        background: #835997; /* Keep the color change */
+        color: white;
+      }
+      .dropdown a:hover ~ a {
+        transform: none;
+      }
+
+      .dropdown a:has(~ a:hover) {
+        transform: none;
+      }
+      .dropdown {
+        padding: 0;
+      }
+      .dropdown a {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: auto;
+      }
+
+      /* footer---------------------------------------------------------------------------------------------------- */
+
+      footer {
+        background-color: #835997;
+        color: white;
+        padding: 40px 0;
+        margin-bottom: -35px;
+      }
+
+      footer > div {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+      }
+
+      footer > div > div > img {
+        width: 170px;
+        height: 170px;
+        border-radius: 50%;
+      }
+
+      footer > div > div > h1 {
+        font-size: 30px;
+        font-weight: 600;
+        color: #fcf3cd;
+        margin: 8px 0 0 0;
+      }
+
+      footer > div > div > h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 12px 0 0 5px;
+      }
+
+      footer > div > hr {
+        height: 220px;
+        width: 2px;
+        background-color: rgba(255, 255, 255, 0.17);
+        border: none;
+        margin: 10px 0;
+      }
+     
+  
+  
+  @keyframes fadeInOut {
+    0% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    10% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    90% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+    
+      .clo , #clo {
+        display: none;
+      }
+   
+      
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+    .premium-btn {
+      background: rgba(136, 0, 255, 0.1);
+      color: #835997;
+      padding: 12px 28px;
+      border: 1px solid #835997;
+      border-radius: 12px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 15px rgba(136, 0, 255, 0.2);
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease-in-out;
+    }
+    
+    .premium-btn:hover {
+      background: #835997;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(136, 0, 255, 0.3);
+    }
+    .strength-message {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  .valid {
+    color: green;
+  }
+  .invalid {
+    color: red;
+  }
+@media (min-width: 300px) and (max-width: 350px) {
+  /* Header Adjustments */
+  header {
+    height: auto; /* Allow height to adjust based on content */
+    min-height: 180px;
+    max-height: 350px;
+    padding-bottom: 10px; /* Add padding if navbar moves inside */
+  }
+
+  header > .content > img { /* Logo */
+    width: 80px;
+    height: 80px;
+    margin-bottom: 8px;
+  }
+
+  header > .content > h1 { /* Main Heading (adjust if .clo is removed) */
+    font-size: 20px; /* Significantly smaller */
+    margin: 5px 0;
+  }
+
+  header > .content > a { /* General link styling in header */
+      font-size: 16px;
+      padding: 8px 15px;
+
+  }
+  header > .content > a.clo { /* "Book" Button */
+    font-size: 16px;
+    padding: 8px 15px;
+    margin-top: 10px;
+    border-radius: 20px; /* Slightly smaller radius */
+  }
+
+  /* Profile/Login Link adjustment */
+  header > .content > a:nth-of-type(2),
+  header > .content > a[href*="profile"],
+  header > .content > a[href*="login"] {
+    position: relative; /* Remove absolute positioning */
+    top: auto;
+    right: auto;
+    font-size: 14px;
+    padding: 5px 10px;
+    margin-top: 15px; /* Space below other content */
+    display: block; /* Make it block for centering */
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content; /* Size to its content */
+    border-radius: 5px;
+  }
+
+   /* Adjust profile picture size within the link */
+  #profile-imagetop {
+     height: 25px !important; /* Smaller image */
+     width: 25px !important;
+     vertical-align: middle; /* Align better with text */
+   }
+
+  /* Hide elements meant for larger screens if needed */
+
+
+
+  /* Navigation Adjustments */
+  nav.navbar {
+    position: relative; /* Make it flow normally */
+    height: auto; /* Auto height */
+    flex-direction: column; /* Stack nav items vertically */
+    align-items: center; /* Center items horizontally */
+    padding: 10px 0;
+    margin-top: 0; /* Reset margin */
+  }
+
+  .navbar a {
+    display: block; /* Full width */
+    width: 95%; /* Slightly less than full width for padding */
+    margin: 4px auto; /* Vertical spacing, horizontal centering */
+    text-align: center;
+    padding: 8px 10px;
+    font-size: 14px; /* Smaller font */
+    font-weight: normal; /* Reduce boldness if needed */
+    transform: none !important; /* IMPORTANT: Remove transforms */
+    transition: background 0.2s ease; /* Simplify transition */
+  }
+
+  /* Disable complex hover effects */
+  .navbar a:hover {
+    font-size: 14px; /* Keep font size */
+    transform: none !important; /* No scaling */
+    background: #674677; /* Keep background change */
+  }
+
+  /* Disable neighbor shifting */
+  .navbar a:hover ~ a,
+  .navbar a:has(~ a:hover) {
+    transform: none !important;
+  }
+
+  /* Dropdown Adjustments */
+  .dropdown {
+    position: relative; /* Static positioning within the flow */
+    display: block; /* Make dropdown items always visible below parent */
+    width: 100%; /* Full width */
+    left: 0 !important; /* Override specific positioning */
+    top: 0 !important;
+    transform: none !important; /* No transform */
+    background: none; /* Remove dropdown-specific background */
+    padding: 0;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.1); /* Add separator */
+  }
+
+  /* Style parent trigger links similarly or hide them */
+   .has-dropdown {
+     /* background-color: rgba(0,0,0,0.1); /* Optional: slightly different background */
+     font-weight: bold; /* Make them look like headers */
+   }
+
+  .dropdown a {
+    font-size: 13px; /* Smaller font for items */
+    padding: 7px 10px;
+    background-color: rgba(131, 89, 151, 0.1); /* Faint background for items */
+    width: 100%; /* Full width */
+    margin: 0;
+    display: block;
+    transform: none !important; /* No transform */
+    transition: background 0.2s ease; /* Simple transition */
+  }
+
+  .dropdown a:hover {
+    background: #674677; /* Keep hover */
+    font-size: 13px; /* Keep font size */
+    transform: none !important; /* Keep no transform */
+  }
+
+  /* Remove active dropdown scaling/special states */
+  .active-dropdown {
+    background: #835997 !important; /* Keep background */
+    transform: none !important; /* Remove scaling */
+  }
+
+
+
+  /* Footer Adjustments */
+  footer {
+    padding: 20px 10px; /* Adjust padding */
+  }
+
+  footer > div {
+    flex-direction: column; /* Stack sections vertically */
+    align-items: center; /* Center content */
+    text-align: center;
+  }
+
+  footer > div > div {
+    margin-bottom: 25px; /* Space between sections */
+    width: 100%; /* Full width */
+  }
+   /* Remove last margin */
+   footer > div > div:last-child {
+     margin-bottom: 0;
+   }
+
+  footer > div > hr {
+    display: none; /* Hide divider lines */
+  }
+
+  footer > div > div > img { /* Footer Logo */
+    width: 90px;
+    height: 90px;
+    margin-bottom: 5px;
+  }
+
+  footer > div > div > h1 {
+    font-size: 20px; /* Smaller footer headings */
+    margin-top: 0;
+  }
+
+  footer > div > div > h3 {
+    font-size: 14px; /* Smaller footer links */
+    margin: 6px 0 0 0;
+  }
+   footer > div > div > h3 a {
+     padding: 4px 0; /* Add slight padding for easier tapping */
+   }
+
+   /* Alert Message Adjustments */
+   .alert {
+     min-width: 200px;
+     max-width: 280px;
+     font-size: 13px;
+     padding: 10px 14px;
+     bottom: 10px;
+     right: 10px;
+   }
+   .alert .btn-close {
+       top: 4px;
+       right: 6px;
+       /* Adjust size/filter if needed */
+   }
+}
+/* Assume your default desktop styles are here */
+/* .navbar { ... } */
+/* .navbar a { ... } */
+/* .navbar .dropdown { display: none; position: absolute; ... } */
+/* etc. */
+
+/* Hide hamburger button on larger screens */
+.navbar-toggle {
+    display: none;
+}
+
+
+/* =========================================== */
+/* Mobile Styles (Screens BELOW 350px)       */
+/* =========================================== */
+@media (max-width: 400px) {
+
+    .navbar {
+        /* Adjust overall navbar padding if needed */
+        padding: 8px 10px;
+        /* Ensure button can be positioned */
+        position: relative;
+        /* Minimum height to contain the button */
+        min-height: 40px; /* Adjust as needed */
+        /* Override potential desktop flex settings if needed */
+        display: block; /* Or flex if you want to align button */
+    }
+
+    /* --- Hamburger Button --- */
+    .navbar-toggle {
+        display: block; /* Show the button */
+        position: absolute; /* Position relative to navbar */
+        top: 8px;  /* Adjust vertical position */
+        right: 10px; /* Adjust horizontal position */
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        z-index: 101; /* Ensure it's above everything else */
+        width: 30px;
+        height: 22px;
+    }
+
+    .navbar-toggle span {
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #333;
+        margin-bottom: 4px;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .navbar-toggle span:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Style for 'X' when menu is open (add 'navbar-open' class via JS) */
+    .navbar.navbar-open .navbar-toggle span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    .navbar.navbar-open .navbar-toggle span:nth-child(2) {
+        opacity: 0;
+    }
+    .navbar.navbar-open .navbar-toggle span:nth-child(3) {
+        transform: rotate(-45deg) translate(5px, -5px);
+    }
+
+    /* --- Hide Original Links & Dropdowns By Default --- */
+    /* Target DIRECT children 'a' and 'div' of the navbar */
+    .navbar > a,
+    .navbar > .dropdown {
+        display: none;
+    }
+
+    /* --- Style the NAV itself when open to act as container --- */
+    .navbar.navbar-open {
+        /* Position it if needed, or just let it expand vertically */
+        background-color: #e4b2fb; /* Background for the mobile menu area */
+        padding-top: 50px; /* Add space below the toggle button */
+        padding-bottom: 10px;
+        border-top: 1px solid #ccc; /* Optional top border */
+        /* If you want it to overlay content: */
+        /* position: absolute;
+           top: 0;
+           left: 0;
+           right: 0;
+           z-index: 100;
+           box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+           max-height: 100vh;
+           overflow-y: auto; */
+    }
+
+    /* --- Show & Style Links when Menu is Open --- */
+    .navbar.navbar-open > a {
+        display: block; /* Stack vertically */
+        padding: 12px 15px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+        color: #222;
+        text-decoration: none;
+    }
+
+    /* Add indicator to dropdown triggers */
+    /* .navbar.navbar-open > a.has-dropdown { */
+       /* Add an indicator? (optional) */
+       /* Example: position: relative; */
+    /* } */
+    .navbar.navbar-open > a.has-dropdown::after {
+        content: '+'; /* Or ▼, > */
+        float: right;
+        font-weight: bold;
+        margin-left: 10px;
+        transition: transform 0.3s ease;
+    }
+    /* Rotate indicator when dropdown is open (add 'submenu-open' class via JS) */
+     .navbar.navbar-open > a.has-dropdown.submenu-open::after {
+         transform: rotate(45deg);
+     }
+
+
+    /* --- Style Dropdown Content (Mobile) --- */
+    .navbar.navbar-open > .dropdown {
+        display: none; /* Keep hidden until explicitly opened by JS */
+        position: static; /* Override desktop absolute positioning */
+        background-color: #e8e8e8;
+        box-shadow: none;
+        padding-left: 0;
+        border-bottom: 1px solid #ddd; /* Separator for the whole dropdown block */
+    }
+
+    /* Show dropdown when its trigger has 'submenu-open' (JS adds this class) */
+    /* We target the dropdown div directly using its ID or class when JS adds the class */
+    .navbar.navbar-open > .dropdown.submenu-open {
+       display: block;
+    }
+
+     /* Style submenu links */
+    .navbar.navbar-open > .dropdown a {
+        display: block; /* Ensure they stack */
+        padding: 10px 15px 10px 30px; /* Indent submenu items */
+        font-size: 0.9em;
+        color: #444;
+        text-decoration: none;
+        border-top: 1px solid #eee; /* Add subtle top border */
+    }
+    .navbar.navbar-open > .dropdown a:first-child {
+       border-top: none;
+    }
+
+
+} /* End of @media (max-width: 349px) */
+    </style>
+ 
+        
+      {% block style %}
+      
+     {% endblock %}
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  </head>
+
+  <body>
+    <header style="background-color: #eb9a4b;">
+      <video class="clo vid" src="{% static 'videos/petcare_video.mp4' %}" autoplay muted loop></video>
+      <div class="content">
+        <img src="/static/images/logo.jpg" alt="Park's Paws Logo" />
+        <h1 class="clo" style="color: white;">Plan your visit, we'd love to meet your pet.</h1>
+        <a class="clo" id="clo" href="">Book a Meet & Greet + Tour</a>
+        
+
+        {% if user.username %}
+        <a
+          style="
+            background:white;
+            background-clip: text;
+            -webkit-background-clip: text; /* For WebKit browsers */
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+            font-size: xx-large;
+            font-weight: bold;
+          "
+          href="{% url 'profile' email=user.email %}"
+        >
+          <span class="profile-pic">
+            
+            {% if user.profile_picture %}
+            <img id="profile-imagetop"
+              style="height: 40px; width: 40px; border-radius: 50%"
+              src="{{ user.profile_picture.url }}"
+              alt="Profile Picture">
+          {% else %}
+            <img id="profile-imagetop" style="height: 40px; width: 40px; border-radius: 50%"
+                 src="{% static 'images/bydefautprofile.jpg' %}"
+                 alt="Default Profile Picture">
+          {% endif %}
+          
+           
+             </span
+          >
+          {{ user.username }}</a
+        >
+        {% else %}
+        <a href="{% url 'login' %}">login or register</a>
+        {% endif %}
+      </div>
+      
+    
+      <nav class="navbar" style="margin-top: 1px;">
+           <button class="navbar-toggle" aria-label="Toggle navigation" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+          </button>
+        <a href="{% url 'home' %}">HOME</a>
+        <a href="{% url 'aboutus' %}">ABOUT US</a>
+
+        <a class="has-dropdown1 has-dropdown" id="ser">SERVICES</a>
+        <!-- <div id="a"  class="has-dropdown"> -->
+        <div id="servicebox" class="dropdown1 dropdown">
+          <a href="{% url 'doggydaycamp' %}">DOGGY DAY CAMP</a>
+          <a href="{% url 'puppyplay' %}">PUPPY PLAY GROUP</a>
+          
+        <!-- </div> -->
+      </div>
+      
+      <a class="has-dropdown2 has-dropdown" id="res">RESOURCES</a>
+      <!-- <div class="has-dropdown"> -->
+        <div id="resourcesbox" class="dropdown2 dropdown">
+          <a href="{% url 'boarding' %}">BOARDING</a>
+          <a href="{% url 'grooming' %}">GROOMING</a>
+          <a href="{% url 'faq' %}">FAQ</a>
+        <!-- </div> -->
+      </div>
+      <a href="{% url 'product_list' %}">SHOP</a>
+        <!-- <a href="">PETCAMS</a> -->
+        <a href="{% url 'contact' %}">CONTACT</a>
+
+        <a class="has-dropdown3 has-dropdown" id="blog">BLOG</a>
+        <div id="blogbox" class="dropdown3 dropdown">
+          <a href="{% url 'blog' blog='adopt' %}">PET ADOPTION</a>
+          <a href="{% url 'blog' blog='service' %}">PET SERVICES</a>
+        </div>
+      </nav>
+    </header>
+
+    {% block content %} {% endblock %}
+    <footer id="footer">
+      <div>
+        <div>
+          <img src="/static/images/logo.jpg" alt="" />
+        </div>
+        <div>
+          <h1>About</h1>
+          <h3><a href="{% url 'aboutus' %}">About Us</a></h3>
+        </div>
+        <hr />
+        <div>
+          <h1>Services</h1>
+          <h3><a href="{% url 'product_list' %}">BUY PET FOOD</a></h3>
+          <h3><a href="{% url 'doggydaycamp' %}">DOGGY DAY CAMP</a></h3>
+          <h3><a href="{% url 'puppyplay' %}">PUPPY PLAY GROUP</a></h3>
+        </div>
+        <hr />
+        <div>
+          <h1>Resources</h1>
+          <h3><a href="{% url 'boarding' %}">BOARDING</a></h3>
+          <h3><a href="{% url 'faq' %}">FAQ</a></h3>
+          <h3><a href="{% url 'grooming' %}">GROOMING</a></h3>
+        </div>
+        <hr>
+        <div>
+          <h1>Blog</h1>
+          <h3><a href="{% url 'blog' blog='adopt' %}">PET ADOPTION</a></h3>
+          <h3><a href="{% url 'blog' blog='service' %}">PET SERVICES</a></h3>
+        </div>
+      </div>
+    </footer>
+    
+    {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        min-width: 250px;
+        max-width: 350px;
+        background-color: #6b32e4;
+        color: #fff;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        font-weight: 500;
+        font-size: 14px;
+        padding: 12px 16px;
+        border-radius: 8px;
+        transition: opacity 0.5s ease;
+        animation: fadeOut 0.5s ease 7s forwards;
+      ">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="
+          position: absolute;
+          top: 6px;
+          right: 8px;
+          filter: invert(1);
+        "></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  
+
+
+  </body>
+
+  
+  <script>
+   
+    document.addEventListener("DOMContentLoaded", function () {
+      let dropdowns = [
+        {
+          parent: document.getElementById("ser"),
+          box: document.getElementById("servicebox"),
+        },
+        {
+          parent: document.getElementById("res"),
+          box: document.getElementById("resourcesbox"),
+        },
+        {
+          parent: document.getElementById("blog"),
+          box: document.getElementById("blogbox"),
+        },
+      ];
+
+      dropdowns.forEach(({ parent, box }) => {
+        parent.addEventListener("mouseenter", function () {
+          parent.classList.add("active-dropdown");
+        });
+
+        parent.addEventListener("mouseleave", function () {
+          setTimeout(() => {
+            if (!box.matches(":hover")) {
+              parent.classList.remove("active-dropdown");
+            }
+          }, 200);
+        });
+
+        box.addEventListener("mouseenter", function () {
+          parent.classList.add("active-dropdown");
+        });
+
+        box.addEventListener("mouseleave", function () {
+          parent.classList.remove("active-dropdown");
+        });
+      });
+    });
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  {% block javascript %}
+    
+  {% endblock %}
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    const navbar = document.querySelector('.navbar');
+    const navbarToggle = document.querySelector('.navbar-toggle');
+    // We don't have a .navbar-links container now
+
+    // Get all direct children 'a' elements that are dropdown triggers
+    const dropdownTriggers = navbar.querySelectorAll('.navbar > a.has-dropdown');
+
+    // Toggle the main mobile menu visibility by adding/removing class on the NAV
+    if (navbarToggle && navbar) {
+        navbarToggle.addEventListener('click', () => {
+            navbar.classList.toggle('navbar-open');
+            const isOpen = navbar.classList.contains('navbar-open');
+            navbarToggle.setAttribute('aria-expanded', isOpen);
+
+            // If closing the main menu, also close all submenus
+            if (!isOpen) {
+                navbar.querySelectorAll('.navbar > .dropdown.submenu-open').forEach(submenu => {
+                    submenu.classList.remove('submenu-open');
+                    submenu.style.display = 'none'; // Ensure hidden
+                });
+                 navbar.querySelectorAll('.navbar > a.has-dropdown.submenu-open').forEach(trigger => {
+                    trigger.classList.remove('submenu-open');
+                });
+            }
+        });
+    }
+
+    // Toggle submenus within the mobile menu
+    dropdownTriggers.forEach(trigger => {
+        // IMPORTANT: Find the *next sibling element* which MUST be the dropdown div
+        const dropdownContent = trigger.nextElementSibling;
+
+        // Check if the next sibling is indeed a dropdown div
+        if (dropdownContent && dropdownContent.classList.contains('dropdown')) {
+            trigger.addEventListener('click', (event) => {
+                // Only proceed if the main menu is open
+                if (!navbar.classList.contains('navbar-open')) {
+                    return;
+                }
+
+                event.preventDefault(); // Prevent link navigation
+
+                const isCurrentlyOpen = trigger.classList.contains('submenu-open');
+
+                // Close other open submenus first
+                navbar.querySelectorAll('.navbar > .dropdown.submenu-open').forEach(submenu => {
+                    if (submenu !== dropdownContent) {
+                         submenu.classList.remove('submenu-open');
+                         submenu.style.display = 'none'; // Hide via JS
+                         // Also remove class from the corresponding trigger
+                         const correspondingTrigger = submenu.previousElementSibling;
+                         if (correspondingTrigger && correspondingTrigger.classList.contains('has-dropdown')) {
+                             correspondingTrigger.classList.remove('submenu-open');
+                         }
+                    }
+                });
+
+                // Toggle the current submenu
+                if (isCurrentlyOpen) {
+                    trigger.classList.remove('submenu-open');
+                    dropdownContent.classList.remove('submenu-open');
+                    dropdownContent.style.display = 'none'; // Hide via JS
+                } else {
+                    trigger.classList.add('submenu-open');
+                    dropdownContent.classList.add('submenu-open');
+                    dropdownContent.style.display = 'block'; // Show via JS
+                }
+            });
+        } else {
+             console.warn("Dropdown trigger found without an adjacent dropdown div:", trigger);
+        }
+    });
+
+    // Optional: Close menu if clicking outside of it
+    document.addEventListener('click', (event) => {
+        if (!navbar.contains(event.target) && navbar.classList.contains('navbar-open')) {
+            navbar.classList.remove('navbar-open');
+            navbarToggle.setAttribute('aria-expanded', 'false');
+            // Ensure submenus are also closed
+             navbar.querySelectorAll('.navbar > .dropdown.submenu-open').forEach(submenu => {
+                 submenu.classList.remove('submenu-open');
+                 submenu.style.display = 'none';
+            });
+             navbar.querySelectorAll('.navbar > a.has-dropdown.submenu-open').forEach(trigger => {
+                 trigger.classList.remove('submenu-open');
+            });
+        }
+    });
+
+});
+  </script>
+</html>

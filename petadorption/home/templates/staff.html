@@ -1,0 +1,364 @@
+{% extends 'base.html' %} 
+{% block content %}
+<div id="start">
+  <h1>welcome {{user.username}}</h1>
+  <a href="/admin/"><button class="premium-btn" style="position: absolute; top: 38%; right: 4%;">go to admin</button></a>
+  <div class="accordion" id="accordionExample" >
+    <!-- First Item -->
+    {% if not request.user.is_superuser %}
+  
+      
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseOne"
+        >
+          login as super admin
+        </button>
+      </h2>
+      <div id="collapseOne" class="accordion-collapse collapse ">
+        <div class="accordion-body">
+          <form action="{% url 'login' %}" method="post" style="font-size: small; text-align: center; max-width: 500px; margin: auto;" class="form">
+            {% csrf_token %}
+            <h3 style="margin-bottom: 20px">Login</h3>
+          
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+              />
+            </div>
+            <p>OR</p>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email address</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="example@gmail.com"
+              />
+            </div>
+          
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                placeholder="Your password"
+                required
+              />
+            </div>
+          
+            <button type="submit" class="btn btn-primary" style="margin-top: 30px">
+              Submit
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+      
+    {% endif %}
+    
+    <!-- Second Item -->
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#collapseTwo"
+        >
+          staf
+        </button>
+      </h2>
+      <div id="collapseTwo" class="accordion-collapse collapse">
+        <div class="accordion-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">id</th>
+                <th scope="col">name</th>
+                <th scope="col">email</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for admin in admins %}
+              <tr>
+                <td>{{admin.id}}</td>
+                <td>{{admin.username}}</td>
+                <td>{{admin.email}}</td>
+                <td>
+                  {% if admin.email == request.user.email %}
+                    YOU
+                  {% endif %}
+                    
+                </td>
+              </tr>
+
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!--four item -->   
+    {% include "clcommon.html" %}
+
+    
+  </div>
+</div>
+{% load static %}
+
+<style>
+  .premium-btn{
+      position: absolute;
+       top: 38%;
+        right: 4%;}
+        #start{
+          margin-top: 100px;
+        }
+/* =========================================== */
+  /* Styles for screens <= 850px wide          */
+  /* (Tablet / Smaller Desktop Adjustments)      */
+  /* =========================================== */
+  @media (max-width: 850px) {
+    .premium-btn{
+      position: static;
+      }
+      /* --- Main Wrapper --- */
+      /* Targeting the div via its inline style is brittle. Add an ID if possible. */
+      div[style*="margin-top: 100px"] {
+          margin-top: 70px !important; /* Adjust top margin */
+          padding-left: 15px;  /* Add some padding */
+          padding-right: 15px;
+      }
+  
+      /* Welcome Heading */
+      div[style*="margin-top: 100px"] > h1 {
+         font-size: 1.8rem; /* Adjust font size */
+         text-align: center;
+         margin-bottom: 1rem;
+      }
+  
+      /* --- Admin Button --- */
+      a[href="/admin/"] {
+          position: static !important; /* Override inline absolute */
+          display: block !important; /* Make it a block element */
+          width: fit-content; /* Size to content */
+          margin: 0 auto 1.5rem auto !important; /* Center and add bottom margin */
+          top: auto !important;
+          right: auto !important;
+      }
+       a[href="/admin/"] > button.premium-btn {
+           /* Adjust button style if needed */
+           padding: 10px 20px;
+           font-size: 0.95rem;
+       }
+  
+      /* --- Accordion --- */
+      .accordion {
+         max-width: 95%; /* Slightly narrower */
+         margin: 0 auto; /* Center */
+      }
+      .accordion-button {
+          font-size: 1rem; /* Adjust button text size */
+          padding: 0.9rem 1rem; /* Adjust padding */
+      }
+      .accordion-body {
+          padding: 1rem; /* Adjust padding */
+          /* Add horizontal scroll to accordion bodies containing tables */
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+      }
+  
+      /* --- Login Form within Accordion --- */
+      .accordion-body form { /* Target forms inside accordion */
+          max-width: 100% !important; /* Allow form to fill accordion body */
+          font-size: small !important; /* Already small, maybe keep */
+      }
+       .accordion-body form h3 {
+           font-size: 1.3rem; /* Adjust heading */
+       }
+        .accordion-body form label {
+           font-size: 0.9rem; /* Adjust labels */
+        }
+        .accordion-body form .form-control {
+           font-size: 0.9rem; /* Adjust input text */
+        }
+        .accordion-body form button[type="submit"] {
+            font-size: 0.95rem;
+            padding: 8px 20px;
+            margin-top: 15px !important; /* Adjust margin */
+        }
+  
+      /* --- Tables (Staff + Included Content) --- */
+      .table th, .table td,
+      .letter-table th, .letter-table td { /* Target all potential tables */
+          font-size: 0.85rem; /* Adjust table font size */
+          padding: 8px 10px; /* Adjust table cell padding */
+          white-space: nowrap; /* Keep content on one line for scrolling */
+      }
+       /* Allow specific table columns to wrap */
+       .table td:nth-child(n+2), /* Example: Allow name/email etc. to wrap */
+       .letter-table td:nth-child(5) /* Message */
+       {
+          white-space: normal;
+          min-width: 120px; /* Adjust min width */
+       }
+       /* Icons in tables */
+       td i.fa-lightbulb {
+           font-size: 18px;
+        }
+        td form button { /* Delete buttons */
+           font-size: 0.8rem;
+        }
+        .empty-box, .checked-box {
+            width: 16px; height: 16px;
+        }
+  
+      /* Adjust tab buttons if included */
+      .button-group, .letter-button-group, .order-button-group {
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+       .button-group button, .dropdown-container,
+       .letter-button-group button, .letter-dropdown-container,
+       .order-button-group button, .order-dropdown-container {
+          padding: 9px 14px;
+          font-size: 14px;
+       }
+       /* Adjust included content boxes padding */
+       .content-box, .letter-content-box, .order-content-box {
+           padding: 15px 10px;
+           overflow-x: auto; /* Ensure scroll */
+            -webkit-overflow-scrolling: touch;
+       }
+  
+  }
+  
+  
+  /* =========================================== */
+  /* Styles for screens <= 349px wide          */
+  /* (Mobile Adjustments)                      */
+  /* =========================================== */
+  @media (max-width: 349px) {
+    #start{
+          margin-top: 0px;
+        }
+      /* --- Main Wrapper --- */
+      div[style*="margin-top: 100px"] {
+          margin-top: 50px !important;
+          padding-left: 8px;
+          padding-right: 8px;
+      }
+  
+      /* Welcome Heading */
+      div[style*="margin-top: 100px"] > h1 {
+         font-size: 1.4rem;
+      }
+  
+      /* --- Admin Button --- */
+      a[href="/admin/"] {
+          width: 90%; /* Make button wider */
+          margin: 0.8rem auto 1.2rem auto !important;
+      }
+       a[href="/admin/"] > button.premium-btn {
+           padding: 8px 15px;
+           font-size: 0.85rem;
+           width: 91%; 
+       }
+  
+      /* --- Accordion --- */
+      .accordion {
+         max-width: 100%; /* Use full width */
+         margin-top: 50px;
+      }
+      .accordion-button {
+          font-size: 0.9rem;
+          padding: 0.7rem 0.8rem;
+          /* Allow text wrapping */
+          white-space: normal;
+          line-height: 1.4;
+      }
+      /* Adjust padding for collapsed state specifically if needed */
+      
+      .accordion-body {
+          padding: 0.8rem;
+          font-size: 0.85rem; /* Base size for accordion content */
+      }
+  
+      /* --- Login Form within Accordion --- */
+       .accordion-body form h3 {
+           font-size: 1.1rem;
+           margin-bottom: 15px !important;
+       }
+        .accordion-body form label {
+           font-size: 0.8rem;
+        }
+        .accordion-body form .form-control {
+           font-size: 0.8rem;
+        }
+        .accordion-body form p {
+            font-size: 0.85rem;
+        }
+        .accordion-body form button[type="submit"] {
+            font-size: 0.9rem;
+            padding: 6px 16px;
+            margin-top: 10px !important;
+        }
+  
+      /* --- Tables (Staff + Included Content) --- */
+      .table th, .table td,
+      .letter-table th, .letter-table td {
+          font-size: 11px; /* Further reduce font size */
+          padding: 6px 5px; /* Further reduce padding */
+      }
+      /* Allow specific table columns to wrap */
+       .table td:nth-child(n+2),
+       .letter-table td:nth-child(5)
+       {
+          white-space: normal;
+          min-width: 80px; /* Adjust min width */
+       }
+       /* Icons in tables */
+       td i.fa-lightbulb {
+           font-size: 16px;
+        }
+        td form button {
+           font-size: 11px;
+           padding: 1px 3px;
+        }
+         .empty-box, .checked-box {
+            width: 14px; height: 14px;
+        }
+  
+       /* Adjust tab buttons if included */
+      .button-group, .letter-button-group, .order-button-group {
+          gap: 6px;
+      }
+       .button-group button, .dropdown-container,
+       .letter-button-group button, .letter-dropdown-container,
+       .order-button-group button, .order-dropdown-container {
+          padding: 8px 10px;
+          font-size: 12px;
+       }
+       /* Adjust included content boxes padding */
+       .content-box, .letter-content-box, .order-content-box {
+           padding: 10px 5px;
+       }
+  }</style>
+<link rel="stylesheet" href="{% static 'css/clcommon.css' %}">
+<script src="{% static 'js/clcommon.js' %}"></script>
+
+{% endblock %}

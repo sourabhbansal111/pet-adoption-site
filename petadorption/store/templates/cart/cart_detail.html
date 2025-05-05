@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="cart-container" style="margin-top: 80px;">
+    <h1>Your Shopping Cart</h1>
+    <a href="{% url 'product_list' %}" class="shop-btn" style="position: absolute; top: 280px; right: 45px;">Continue Shopping</a>
+    <a href="{% url 'my_orders' %}" class="shop-btn" style="position: absolute;top: 280px; right: 250px; background-color: #333;">My Orders</a>
+
+    
+    {% if cart_items %}
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th style="width: 40%;">Product</th>
+                <th style="width: 10%;">Quantity</th>
+                <th style="width: 15%;">Price</th>
+                <th style="width: 15%;">Total</th>
+                <th style="width: 10%;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for cart_item in cart_items %}
+            <tr>
+                <td class="product-info" style="display: flex; gap: 10px; align-items: center;">
+                    <img src="{{ cart_item.product.image.url }}" alt="{{ cart_item.product.name }}" width="80">
+                    <div style="max-width: 300px;">
+                        <h3 style="margin: 0;">{{ cart_item.product.name }}</h3>
+                        <p style="margin: 0; font-size: 14px;">{{ cart_item.product.description|truncatewords:15 }}</p>
+                    </div>
+                </td>
+                <td class="quantity">
+                    <a href="{% url 'remove_from_cart' cart_item.product.id %}">−</a>
+                    <span>{{ cart_item.quantity }}</span>
+                    <a href="{% url 'add_to_cart' cart_item.product.id %}">+</a>
+                </td>
+                <td class="price">Rs.{{ cart_item.product.price }}</td>
+                <td class="total">Rs.{{ cart_item.sub_total }}</td>
+                <td class="action">
+                    <a href="{% url 'full_remove' cart_item.product.id %}" class="remove-btn">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+
+    <div class="cart-summary">
+        <div class="summary-card">
+            <h3>Order Summary</h3>
+            <div class="summary-row">
+                <span>Subtotal:</span>
+                <span>Rs.{{ total }}</span>
+            </div>
+            <div class="summary-row">
+                <span>Shipping:</span>
+                <span>Free</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total:</span>
+                <span>Rs.{{ total }}</span>
+            </div>
+            {% if user.is_authenticated and not user.is_verified %}
+                <p style="color: red; margin-top: 5px;">Please verify your email to proceed with checkout.</p>
+            {% endif %}
+
+            <form action="{% url 'checkout' %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="checkout-btn"{% if not user.is_authenticated or not user.is_verified %}disabled style="cursor: not-allowed; opacity: 0.6;"{% endif %}>
+                    Proceed to Checkout</button>
+            </form>
+            </div>
+    </div>
+    {% else %}
+    <div class="empty-cart">
+        <img src="{% static 'images/empty_cart.png' %}" alt="Empty Cart" style="background-color: #ddd;">
+        <h2>Your cart is empty</h2>
+        <p>Looks like you haven't added anything to your cart yet</p>
+        <a href="{% url 'product_list' %}" class="shop-btn">Continue Shopping</a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .cart-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+    
+    .cart-table th {
+        text-align: left;
+        padding: 1rem;
+        background-color: #f5f5f5;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .cart-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+    
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .product-info img {
+        border-radius: 4px;
+    }
+    
+    .quantity a {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        text-align: center;
+        line-height: 25px;
+        background-color: #f0f0f0;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #333;
+    }
+    
+    .quantity span {
+        display: inline-block;
+        margin: 0 10px;
+    }
+    
+    .remove-btn {
+        color: #e74c3c;
+        text-decoration: none;
+    }
+    
+    .cart-summary {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .summary-card {
+        width: 300px;
+        padding: 1.5rem;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+    }
+    
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin: 1rem 0;
+    }
+    
+    .summary-row.total {
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin: 1.5rem 0;
+        padding-top: 1rem;
+        border-top: 1px solid #ddd;
+    }
+    
+    .checkout-btn {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        background-color: #ff7b25;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 4px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    
+    .checkout-btn:hover {
+        background-color: #e65100;
+    }
+    
+    .empty-cart {
+        text-align: center;
+        padding: 3rem 0;
+    }
+    
+    .empty-cart img {
+        width: 150px;
+        margin-bottom: 1rem;
+    }
+    
+    .shop-btn {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.8rem 1.5rem;
+        background-color: #333;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
+    /* =========================================== */
+/* Styles for screens <= 850px wide          */
+/* (Tablet / Smaller Desktop Adjustments)      */
+/* =========================================== */
+@media (max-width: 850px) {
+    .cart-container {
+        padding: 0 0.5rem; /* Reduce horizontal padding slightly */
+        margin-top: 60px !important; /* Adjust top margin */
+        /* Add relative positioning if needed for absolute children, but we'll override children */
+        /* position: relative; */
+    }
+
+    .cart-container h1 {
+        font-size: 1.8rem; /* Adjust heading size */
+        margin-bottom: 1rem;
+    }
+
+    /* --- Reposition Buttons --- */
+    /* Place buttons below heading instead of absolute positioning */
+    .cart-container .shop-btn {
+        position: static !important; /* Override inline styles */
+        top: auto !important;
+        right: auto !important;
+        display: inline-block; /* Or block if preferred */
+        margin-top: 0;
+        margin-right: 10px; /* Space between buttons if inline */
+        margin-bottom: 1.5rem; /* Space below buttons */
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    /* --- Table Adjustments --- */
+    .cart-table th,
+    .cart-table td {
+        padding: 0.75rem; /* Reduce padding */
+        font-size: 0.9rem; /* Slightly reduce font size */
+    }
+
+    .product-info {
+        gap: 0.75rem; /* Reduce gap */
+    }
+
+    .product-info img {
+        width: 65px; /* Slightly smaller image */
+    }
+
+     .product-info h3 {
+        font-size: 1rem; /* Adjust product title size */
+     }
+      .product-info p {
+        font-size: 0.8rem; /* Adjust description size */
+     }
+
+
+    .quantity a {
+        width: 22px; height: 22px; line-height: 22px; /* Slightly smaller buttons */
+    }
+     .quantity span {
+        margin: 0 8px; /* Adjust spacing */
+     }
+
+    /* --- Cart Summary --- */
+    .cart-summary {
+        justify-content: center; /* Center summary card */
+        margin-top: 1.5rem;
+    }
+
+    .summary-card {
+        width: 350px; /* Allow slightly wider card */
+        max-width: 95%; /* Ensure it fits */
+        padding: 1.2rem;
+    }
+     .summary-card h3 {
+        font-size: 1.1rem;
+     }
+
+     .summary-row {
+         font-size: 0.9rem;
+     }
+      .summary-row.total {
+         font-size: 1rem;
+      }
+
+     .checkout-btn {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+     }
+}
+
+
+/* =========================================== */
+/* Styles for screens <= 349px wide          */
+/* (Mobile Adjustments)                      */
+/* =========================================== */
+@media (max-width: 349px) {
+    .cart-container {
+        margin-top: 50px !important; /* Further adjust top margin */
+        padding: 0 5px; /* Minimal padding */
+    }
+
+     .cart-container h1 {
+        font-size: 1.5rem; /* Adjust heading size */
+        margin-bottom: 0.8rem;
+    }
+
+    /* --- Stack Buttons --- */
+    .cart-container .shop-btn {
+        display: block; /* Stack the buttons */
+        width: 100%;
+        max-width: 300px; /* Optional max width */
+        margin: 0 auto 0.5rem auto; /* Center and add bottom margin */
+        text-align: center;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+
+    /* --- Table Horizontal Scroll --- */
+    /* This allows the table to scroll horizontally if content is too wide */
+    /* Ideally, wrap the table in a div with this style */
+    .cart-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap; /* Prevents text wrapping inside cells */
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+        margin-bottom: 1.5rem;
+    }
+     /* Ensure table elements behave correctly with nowrap */
+     .cart-table th,
+     .cart-table td {
+        white-space: normal; /* Allow text wrapping within cells again */
+        vertical-align: middle;
+        padding: 0.5rem; /* Further reduce padding */
+        font-size: 0.8rem; /* Further reduce font size */
+     }
+     /* Set min-widths for columns to force scrolling if needed */
+     .cart-table th:nth-child(1), .cart-table td:nth-child(1) { min-width: 150px; } /* Product */
+     .cart-table th:nth-child(2), .cart-table td:nth-child(2) { min-width: 80px; } /* Qty */
+     .cart-table th:nth-child(3), .cart-table td:nth-child(3) { min-width: 60px; } /* Price */
+     .cart-table th:nth-child(4), .cart-table td:nth-child(4) { min-width: 70px; } /* Total */
+     .cart-table th:nth-child(5), .cart-table td:nth-child(5) { min-width: 60px; } /* Action */
+
+    .product-info img {
+        width: 45px; /* Smaller image */
+    }
+    .product-info h3 {
+        font-size: 0.9rem;
+    }
+    .product-info p {
+        font-size: 0.75rem;
+    }
+
+    .quantity span {
+        margin: 0 5px;
+    }
+     .remove-btn {
+        font-size: 0.75rem;
+     }
+
+    /* --- Cart Summary --- */
+    .cart-summary {
+        justify-content: stretch; /* Allow card to take full width */
+    }
+
+    .summary-card {
+        width: 100%; /* Full width card */
+        padding: 1rem;
+    }
+     .summary-card h3 {
+        font-size: 1rem;
+     }
+      .summary-row {
+         font-size: 0.8rem;
+     }
+      .summary-row.total {
+         font-size: 0.9rem;
+      }
+
+     .checkout-btn {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+     }
+
+     /* --- Empty Cart Adjustments --- */
+     .empty-cart {
+        padding: 2rem 0;
+     }
+     .empty-cart img {
+        width: 100px; /* Smaller image */
+     }
+     .empty-cart h2 {
+        font-size: 1.2rem;
+     }
+     .empty-cart p {
+        font-size: 0.9rem;
+     }
+     .empty-cart .shop-btn {
+       /* Ensure empty cart button matches stacked style */
+       display: block;
+       width: 100%;
+       max-width: 300px;
+       margin: 1rem auto 0 auto;
+       text-align: center;
+     }
+}
+</style>
+{% endblock %}
