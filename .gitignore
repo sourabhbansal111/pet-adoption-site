@@ -5,6 +5,6 @@ __pycache__/
 
 /myenv/
 
-/petadorption/home/static/images/uploads/
-/petadorption/db.sqlite3/
-/api_flask/instance/
+petadorption/home/static/images/uploads/
+petadorption/db.sqlite3/
+api_flask/instance/
