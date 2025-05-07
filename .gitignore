@@ -1,6 +1,10 @@
-myenv/
+# myenv/
 __pycache__/
 **/pyc
 *.py[co]
 
 /myenv/
+
+/petadorption/home/static/images/uploads/
+/petadorption/db.sqlite3/
+/api_flask/instance/
