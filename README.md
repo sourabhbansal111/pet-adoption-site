@@ -12,45 +12,45 @@ The site is completly responsive for mobile phone and desktops.
 
 
 Home page
-![home page](image.png)
+![home page](readmeimages/image.png)
 
 Contact us page 
-![contact us page](image-1.png)
-![contact us page ](image-5.png)
+![contact us page](readmeimages/image-1.png)
+![contact us page ](readmeimages/image-5.png)
 
 profile page 
-![profile page ](image-2.png)
-![profile page](image-3.png)
-![sprofile page](image-4.png)
+![profile page ](readmeimages/image-2.png)
+![profile page](readmeimages/image-3.png)
+![sprofile page](readmeimages/image-4.png)
 
 Blog page 
-![blog page](image-6.png)
-![blog page](image-7.png)
+![blog page](readmeimages/image-6.png)
+![blog page](readmeimages/image-7.png)
 
 Shop 
-![store](image-8.png)
-![store](image-9.png)   
+![store](readmeimages/image-8.png)
+![store](readmeimages/image-9.png)   
 
 my cart
-![my cart](image-10.png)
+![my cart](readmeimages/image-10.png)
 
 after checkout 
-![checkout](image-11.png)
+![checkout](readmeimages/image-11.png)
 
 my orders
-![my orders](image-12.png)
+![my orders](readmeimages/image-12.png)
 
 invoice pdf 
-![invoice](image-13.png)
+![invoice](readmeimages/image-13.png)
 
 email after checkout
-![alt text](<WhatsApp Image 2025-05-08 at 01.43.26_8f2a70cd.jpg>)
+![alt text](readmeimages/<WhatsApp Image 2025-05-08 at 01.43.26_8f2a70cd.jpg>)
 
 admin pannel
-![alt text](image-14.png)
-![alt text](image-15.png)
-![alt text](image-16.png)
-![alt text](image-17.png)
+![alt text](readmeimages/image-14.png)
+![alt text](readmeimages/image-15.png)
+![alt text](readmeimages/image-16.png)
+![alt text](readmeimages/image-17.png)
 
 
 
