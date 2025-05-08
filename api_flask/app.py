@@ -2,23 +2,17 @@ from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash # Keep if needed for other parts, otherwise remove
-import os # For environment variables
+import os 
 
-# --- App Configuration ---
 app = Flask(__name__)
 
-# Use environment variables for sensitive data like secret keys and database URIs
-# Provide sensible defaults for development
 app.config["SECRET_KEY"] = os.environ.get("FLASK_SECRET_KEY", "a_default_dev_secret_key")
-# Define the database URI (consider using PostgreSQL or MySQL in production)
-# Changed default port in URI just in case the old one is still running
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///contact_letter_v2.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# --- Database Setup ---
 db = SQLAlchemy(app)
 
-# --- API Setup ---
 api = Api(app)
 
 # --- Database Models ---
@@ -29,18 +23,17 @@ class ContactModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
     number = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False) # Consider adding validation
+    email = db.Column(db.String(100), nullable=False) 
     location = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    type = db.Column(db.String(20), nullable=False) # 'adopt' or 'service'
-    pname = db.Column(db.String(100), nullable=False) # Product/Pet name
-    pid = db.Column(db.String(100), nullable=False)   # Product/Pet ID
-    status = db.Column(db.String(20), default='pending', nullable=False) # 'accepted', 'declined', 'pending'
-    # Store the ID of the Django user who last updated this. Renamed field.
-    last_updated_by = db.Column(db.Integer, nullable=True) # Renamed from last_updated_by_id
+    type = db.Column(db.String(20), nullable=False) 
+    pname = db.Column(db.String(100), nullable=False)
+    pid = db.Column(db.String(100), nullable=False)  
+    status = db.Column(db.String(20), default='pending', nullable=False) 
+    last_updated_by = db.Column(db.Integer, nullable=True) 
 
     def to_dict(self):
-        """Converts the ContactModel object to a dictionary."""
+
         return {
             "id": self.id,
             "username": self.username,
@@ -52,7 +45,7 @@ class ContactModel(db.Model):
             "pname": self.pname,
             "pid": self.pid,
             "status": self.status,
-            "last_updated_by": self.last_updated_by # Renamed key in dict
+            "last_updated_by": self.last_updated_by 
         }
 
 class LetterModel(db.Model):
@@ -60,13 +53,13 @@ class LetterModel(db.Model):
     __tablename__ = "letters_table"
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), nullable=False)
-    email = db.Column(db.String(100), nullable=False) # Consider adding validation
+    email = db.Column(db.String(100), nullable=False)
     number = db.Column(db.String(100), nullable=False)
     location = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(20), default='Not Viewed', nullable=False) # 'Not Viewed', 'Viewed'
-    # Store the ID of the Django user who last updated this. Renamed field.
-    last_updated_by = db.Column(db.Integer, nullable=True) # Renamed from last_updated_by_id
+    status = db.Column(db.String(20), default='Not Viewed', nullable=False) 
+
+    last_updated_by = db.Column(db.Integer, nullable=True) 
 
     def to_dict(self):
         """Converts the LetterModel object to a dictionary."""
@@ -78,10 +71,10 @@ class LetterModel(db.Model):
             "location": self.location,
             "message": self.message,
             "status": self.status,
-            "last_updated_by": self.last_updated_by # Renamed key in dict
+            "last_updated_by": self.last_updated_by 
         }
 
-# --- API Resources ---
+# --- API functions ---
 
 class ContactResource(Resource):
     """API Resource for handling CRUD operations on Contacts."""
@@ -103,12 +96,10 @@ class ContactResource(Resource):
         if not data:
             return {"message": "No input data provided"}, 400
 
-        # Basic validation (add more as needed)
         required_fields = ["username", "number", "email", "location", "message", "type", "pname", "pid"]
         if not all(field in data for field in required_fields):
             return {"message": f"Missing required fields: {', '.join(required_fields)}"}, 400
 
-        # Validate 'type' and 'status' if provided
         if data['type'] not in ('adopt', 'service'):
              return {"message": "Invalid 'type'. Must be 'adopt' or 'service'."}, 400
         if 'status' in data and data['status'] not in ('accepted', 'declined', 'pending'):
@@ -125,7 +116,6 @@ class ContactResource(Resource):
                 pname=data['pname'],
                 pid=data['pid'],
                 status=data.get('status', 'pending'),
-                # Expect 'last_updated_by' in payload now
                 last_updated_by=data.get('last_updated_by')
             )
             db.session.add(new_contact)
@@ -144,7 +134,6 @@ class ContactResource(Resource):
         data = request.get_json()
         if not data:
             return {"message": "No input data provided"}, 400
-        # Primarily intended for updating status and last_updated_by
         updated = False
         if 'status' in data:
             if data['status'] not in ('accepted', 'declined', 'pending'):
@@ -152,60 +141,48 @@ class ContactResource(Resource):
             contact.status = data['status']
             updated = True
 
-        # Expect 'last_updated_by' in payload now
         if 'last_updated_by' in data:
-             # Basic check if it's an integer or None
-             contact.last_updated_by = data['last_updated_by'] # Assign to renamed field
+             contact.last_updated_by = data['last_updated_by'] 
              updated = True
 
-        # Update username
         if 'username' in data:
             contact.username = data['username']
             updated = True
 
-        # Update number
         if 'number' in data:
             contact.number = data['number']
             updated = True
 
-        # Update email
         if 'email' in data:
             contact.email = data['email']
             updated = True
 
-        # Update location
         if 'location' in data:
             contact.location = data['location']
             updated = True
 
-        # Update message
         if 'message' in data:
             contact.message = data['message']
             updated = True
 
-        # Update type with validation
         if 'type' in data:
             if data['type'] not in ('adopt', 'service'):
                 return {"message": "Invalid 'type'. Must be 'adopt' or 'service'."}, 400
             contact.type = data['type']
             updated = True
 
-        # Update product/pet name
         if 'pname' in data:
             contact.pname = data['pname']
             updated = True
 
-        # Update product/pet ID
         if 'pid' in data:
             contact.pid = data['pid']
             updated = True
 
-        # Add other fields here if you want them to be updatable via PUT
 
         if updated:
             try:
                 db.session.commit()
-                # Return the updated contact using to_dict which now uses the correct key
                 return {"message": "Contact updated successfully", "contact": contact.to_dict()}
             except Exception as e:
                 db.session.rollback()
@@ -249,12 +226,10 @@ class LetterResource(Resource):
         if not data:
             return {"message": "No input data provided"}, 400
 
-        # Basic validation
         required_fields = ["username", "email", "number", "location", "message"]
         if not all(field in data for field in required_fields):
             return {"message": f"Missing required fields: {', '.join(required_fields)}"}, 400
 
-        # Validate 'status' if provided
         if 'status' in data and data['status'] not in ('Not Viewed', 'Viewed'):
              return {"message": "Invalid 'status'. Must be 'Not Viewed' or 'Viewed'."}, 400
 
@@ -285,7 +260,6 @@ class LetterResource(Resource):
         if not data:
             return {"message": "No input data provided"}, 400
 
-        # Primarily intended for updating status and last_updated_by
         updated = False
         if 'status' in data:
             if data['status'] not in ('Not Viewed', 'Viewed'):
@@ -293,41 +267,34 @@ class LetterResource(Resource):
             letter.status = data['status']
             updated = True
 
-        # Expect 'last_updated_by' in payload now
         if 'last_updated_by' in data:
-            letter.last_updated_by = data['last_updated_by'] # Assign to renamed field
+            letter.last_updated_by = data['last_updated_by']
             updated = True
 
         if 'username' in data:
             letter.username = data['username']
             updated = True
 
-        # Validate and update email
         if 'email' in data:
             letter.email = data['email']
             updated = True
 
-        # Validate and update phone number
         if 'number' in data:
             letter.number = data['number']
             updated = True
 
-        # Validate and update location
         if 'location' in data:
             letter.location = data['location']
             updated = True
 
-        # Validate and update message
         if 'message' in data:
             letter.message = data['message']
             updated = True
 
-        # Add other fields here if you want them to be updatable via PUT
 
         if updated:
             try:
                 db.session.commit()
-                 # Return the updated letter using to_dict which now uses the correct key
                 return {"message": "Letter updated successfully", "letter": letter.to_dict()}
             except Exception as e:
                 db.session.rollback()
@@ -361,17 +328,11 @@ api.add_resource(LetterResource,
                  "/letters/<int:letter_id>")  # For GET (one), PUT, DELETE
 
 
-# --- Database Initialization ---
-# Use Flask-Migrate for handling database migrations in a real application
-# This simple create_all is suitable for development/testing
 with app.app_context():
-    print("Creating database tables...")
     db.create_all()
-    print("Database tables created (if they didn't exist).")
+    print("Database tables created .")
 
 
 # --- Run Flask App ---
 if __name__ == "__main__":
-    # Set debug=False in production
-    # Changed default port to 5001 to avoid conflict if 5000 is used
     app.run(debug=True, port=5001)
